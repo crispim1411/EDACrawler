@@ -49,7 +49,7 @@ public class EDACrawler {
             tmp = aux.next();
             String src = tmp.attr("abs:src");
             String alt_text = tmp.attr("alt").toLowerCase();
-            if (src.length() > 1){// && alt_text.contains(searchKey)) {
+            if (src.length() > 1 && alt_text.contains(searchKey)) {
                 payload.imgs.add(src);
                 Imagem img = new Imagem(alt_text, src);//armazenar imagens numa estrutura
             }
