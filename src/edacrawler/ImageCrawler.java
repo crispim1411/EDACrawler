@@ -18,11 +18,11 @@ import javax.swing.JLabel;
  *
  * @author crispim
  */
-public class Image_rename {
+public class ImageCrawler {
     public String alt_text;
     public URL src;
     
-    public Image_rename(String text, String url) throws MalformedURLException {
+    public ImageCrawler(String text, String url) throws MalformedURLException {
         alt_text = text;
         src = new URL(url);
     }
@@ -41,9 +41,11 @@ public class Image_rename {
             frm.getContentPane().add(img);
             frm.setSize(200, 200);
             frm.setVisible(true);
+            
         } catch (HeadlessException | IOException e) {
             System.out.println(url + " invalid");
+        } catch (Exception e) {
+            System.out.println("Exception: "+e);
         }
     }
-    
 }

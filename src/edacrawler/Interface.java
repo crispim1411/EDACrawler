@@ -6,10 +6,14 @@
 
 package edacrawler;
 
-import static edacrawler.Image_rename.display_image;
+import static edacrawler.ImageCrawler.display_image;
+import static edacrawler.Payload.printStructure;
+import java.awt.HeadlessException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 
 /**
  *
@@ -39,7 +43,7 @@ public class Interface extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         txtDepth = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jToggleButton1 = new javax.swing.JToggleButton();
+        boolDomain = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -64,7 +68,7 @@ public class Interface extends javax.swing.JFrame {
 
         jLabel3.setText("Profundidade de pesquisa");
 
-        jToggleButton1.setText("Apenas links do mesmo dominio");
+        boolDomain.setText("Apenas links do mesmo dominio");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -87,7 +91,7 @@ public class Interface extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtDepth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jToggleButton1)
+                        .addComponent(boolDomain)
                         .addGap(40, 40, 40)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -109,7 +113,7 @@ public class Interface extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jToggleButton1))
+                    .addComponent(boolDomain))
                 .addContainerGap())
         );
 
@@ -119,20 +123,35 @@ public class Interface extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             // TODO add your handling code here:
+            System.out.println("Iniciando");
             String url = textURL.getText();
             String searchKey = txtSearch.getText();
             int depth = Integer.parseInt(txtDepth.getText());
+            boolean ifDomain = boolDomain.isEnabled();
+            
             
             EDACrawler eda = new EDACrawler(searchKey, depth); //instancia de crawler
-            //Payload pl = eda.process(url); //links da url
-            Payload pl = eda.recursiveSearch(url);
-            System.out.println("pl: "+pl.links);
-            
-            for (String string : pl.imgs) {
-                display_image(string);      
+            //Payload pl = eda.process(url, url, ifDomain); //links da url
+            Payload pl = eda.recursiveSearch(url, ifDomain); //pesquisa recursiva ainda não operante
+            //System.out.println("pl: "+pl.structureLinks);
+            printStructure(pl.structureLinks);
+            printStructure(pl.structureImgs);
+            JFrame frm = new JFrame();
+//            for (String string : pl.imgs) {
+//                display_image(string);      
+//            }
+            for (ArrayList<String> array : pl.structureImgs) {
+                for (String string : array) {
+                    display_image(string);
+                }
             }
+            System.out.println("Fim");
         } catch (IOException ex) {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (HeadlessException | NumberFormatException e) {
+            System.out.println("Headless or Format error: " + e);
+        } catch (Exception e) {
+            System.out.println("Exception is: " + e);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -172,12 +191,12 @@ public class Interface extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton boolDomain;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JTextField textURL;
     private javax.swing.JTextField txtDepth;
     private javax.swing.JTextArea txtSearch;

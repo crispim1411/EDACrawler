@@ -15,150 +15,138 @@ import org.jsoup.select.Elements;
 
 /**
  *
- * @author pedrodias & paulosantos
+ * @author PedroMatias & RodrigoCrispim
  */
 public class EDACrawler {
     public String searchKey;
     public int limitLevel;
     
-    public EDACrawler(String string, int limitLevel) throws IOException {
+    public EDACrawler(String string, int level) throws IOException {
+        //cria crawler com texto de busca e limite de profundidade de pesquisa
         if (string != null){
             this.searchKey = string.toLowerCase();    
         }
-        this.limitLevel = limitLevel;
+
+        this.limitLevel = level;
     }
 
-    public Payload process(String url) throws IOException {
-        Payload payload = new Payload();
+    public Payload process(String url, String domain, boolean ifDomain) throws IOException {
+        //retorna as imagens e links de um link dado por parâmetro
+        //caso setado retorna os links que fazem parte do dominio
+        try {
+            Payload payload = new Payload();
 
-        if (!url.endsWith("/")) {
-            url += "/";
-        }
-
-        Document doc = Jsoup.connect(url).ignoreContentType(true).get();;
-
-        Elements links = doc.select("a");
-        Iterator<Element> aux = links.iterator();
-
-        while (aux.hasNext()) {
-            String href = aux.next().attr("abs:href");
-            if (href.length() > 1) {
-                payload.links.add(href);
+            if (!url.endsWith("/")) {
+                url += "/";
             }
-        }
-        
-        Elements imgs = doc.select("img");
-        aux = imgs.iterator();
-        Element tmp;
-        while (aux.hasNext()) {
-            tmp = aux.next();
-            String src = tmp.attr("abs:src");
-            String alt_text = tmp.attr("alt").toLowerCase();
-            if (src.length() > 1) {
-                if (searchKey==null || alt_text.contains(searchKey)) {
-                    payload.imgs.add(src);
-                    //Image_rename img = new Image_rename(alt_text, src);//armazenar imagens numa estrutura
+
+            Document doc = Jsoup.connect(url).ignoreContentType(true).get();
+
+            Elements links = doc.select("a");
+            Iterator<Element> aux = links.iterator();
+
+            while (aux.hasNext()) {
+                String href = aux.next().attr("abs:href");
+                if (href.length() > 1) {
+                    if (ifDomain) { //se flag de dominio so adiciona se for do mesmo dominio
+                        if (href.contains(domain)) {
+                            payload.links.add(href);  
+                        }
+                    }
+                    else {
+                        payload.links.add(href);
+                    }
                 }
             }
+
+            Elements imgs = doc.select("img");
+            aux = imgs.iterator();
+            Element tmp;
+            while (aux.hasNext()) {
+                tmp = aux.next();
+                String src = tmp.attr("abs:src");
+                String alt_text = tmp.attr("alt").toLowerCase();
+                if (src.length() > 1) {
+                    if (searchKey==null || alt_text.contains(searchKey)) {
+                        payload.imgs.add(src);
+                        //armazenar imagens numa estrutura
+                    }
+                }
+            }
+
+            payload.html = doc.html();
+
+            return payload;
+            
+        } catch (IOException e) {
+            System.out.println("IOException Process: " + e);
+          return null;
+        } catch (Exception e) {
+            System.out.println("Exception is: " + e);
+          return null;
         }
-
-        payload.html = doc.html();
-
-        return payload;
     }
     
-    public Payload recursiveSearch(String url) throws IOException {
+    public Payload recursiveSearch(String url, boolean ifDomain) throws IOException {
+        //Retorna Payload da url origem e das urls filho 
+        //se setado entra apenas nas url de mesmo dominio
         if (url != null) {
             Payload pl = null;
-            ArrayList<String> visited = new ArrayList<>();
-            return recursiveSearch(pl,url,visited, 0);
+            return recursiveSearch(pl, url, url, ifDomain, 1);
         }
         return null;
     }
     
-    public Payload recursiveSearch(Payload pl, String url, ArrayList visited, int level) throws IOException {
-        if (level < limitLevel) {
-            //level++;
-            if (pl == null) { //Payload vazio
-                //System.out.println("empty");
-                //System.out.println(pl.structureLinks);
-                //System.out.println("\n");
-                
-                pl = this.process(url); //carrega links level 0
-                pl.addToStructure(pl, level); //links do nivel 0
-                
-               //System.out.println("obtido level 0");
-               //printStructure(pl.structureLinks);
-               //System.out.println("\n\n");
-                
+    public Payload recursiveSearch(Payload pl, String url, String domain, boolean ifDomain, int level) throws IOException {
+        try {
+            System.out.println("current level: "+level+" limit: "+limitLevel);
+            if (pl == null) { //Payload vazio               
+                pl = this.process(url, domain, ifDomain); //carrega links level 0
+                pl.addToStructure(pl, level); //links do nivel 0          
             }
-            
-            String nextUrl;
-            Iterator<String> aux = pl.structureLinks.get(level).iterator(); //links do level iteravel
-            //System.out.println("level: "+level+": estrutura obtida: "+pl.structureLinks.get(level));
-            
-            while (aux.hasNext()) { //se há links a iterar
-                nextUrl = aux.next(); //pega o proximo
-                //System.out.println(nextUrl);
-                
-                if (contains(pl.structureLinks, nextUrl, level) == false) { //se o link não foi visitado
-                    Payload tmp = this.process(nextUrl); //obtem payload
-                    pl.addToStructure(tmp, level+1);
-                    //System.out.println("structure updated: "+pl.structureLinks);
-                    
-                    recursiveSearch(pl, nextUrl, visited, level+1); //entra no proximo nivel
+
+            //if (pl.structureLinks.size() > level) { 
+            if (level < this.limitLevel) {
+
+                String nextUrl;
+                Iterator<String> aux = pl.structureLinks.get(level-1).iterator(); //links do level iteravel
+                //System.out.println("level: "+level+": estrutura obtida: "+pl.structureLinks.get(level));
+
+                while (aux.hasNext()) { //se há links a iterar
+                    nextUrl = aux.next(); //pega o proximo
+                    //System.out.println(nextUrl);
+
+                    if (contains(pl.structureLinks, nextUrl, level) == false) { //se o link não foi visitado
+                        Payload tmp = this.process(nextUrl, domain, ifDomain); //obtem payload
+                        if (tmp != null){                        
+                            pl.addToStructure(tmp, level+1);
+                            //System.out.println("structure updated: "+pl.structureLinks);
+                            recursiveSearch(pl, nextUrl, domain,ifDomain, level+1); //entra no proximo nivel
+                        }
+                    }
                 }
-                //para cada link do level 
-                //fazer payload com level+1
-//                for (int i=0;i<pl.structureLinks.size();i++){
-//                    System.out.println("Se já foi visitado no level: "+level);  
-//                }
             }
-            //level++;
-            //adicionar a estrutura e percorrer
-            //itens nivel 0 depois itens nivel 1 etc
-//            for (String string : pl.links) { //para cada link do payload
-//                if (visited.contains(string) == false) { //se o link não foi visitado
-//                    
-//                    Payload plToMerge = this.process(string); //carrega payload do link
-//                    visited.add(string); //adiciona aos visitados
-//                    //System.out.println(string+": "+plToMerge.links); 
-//                    
-//                    //pl.merge(plToMerge); //junta os payloads
-//                    pl.addToStructure(pl, level);
-//                    
-//                    //System.out.println("level: "+level); 
-//
-//                    recursiveSearch(pl, string, visited, level); //entra no proximo nivel
-//                }
-//            }
+
+            return pl;
+            
+        } catch (IOException e) {
+            System.out.println("IOException Payload: "+e);
+            return null;
         }
-        
-        return pl;
+        catch (Exception e) {
+            System.out.println("Exception is: " + e);
+          return null;
+        }
     }
     
     public boolean contains(ArrayList<ArrayList<String>> structure, String url, int level){
         //System.out.println("level: "+level+", size: "+structure.size());
         for (int i=level-1; i>0; i--){
-            //System.out.println("Se já foi visitado no level: "+i);
             if (structure.get(i).contains(url)) {
-                //System.out.println("Level: "+i+" contem "+url);
                 return true;
             }
         } 
         return false;
-    }
-    
-    public void printStructure(ArrayList<ArrayList<String>> structure) {
-        if (structure != null) {
-            System.out.println("level: "+structure.size());
-            for (ArrayList<String> array : structure) {
-                System.out.println("num itens: "+array.size());
-                for (String string : array) {
-                    System.out.println(string);
-                }
-            }
-        }
     }
 
 }
