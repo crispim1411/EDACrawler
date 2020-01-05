@@ -6,18 +6,16 @@
 
 package edacrawler;
 
-import static edacrawler.ImageCrawler.display_image;
 import static edacrawler.Payload.printStructure;
 import java.awt.HeadlessException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
+import static edacrawler.ImageCrawler.displayImages;
 
 /**
  *
- * @author crispim
+ * @author PedroMatias & RodrigoCrispim
  */
 public class Interface extends javax.swing.JFrame {
 
@@ -47,7 +45,7 @@ public class Interface extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        textURL.setText("http://portal2.ipt.pt/");
+        textURL.setText("http://portal2.ipt.pt");
 
         txtSearch.setColumns(20);
         txtSearch.setRows(5);
@@ -122,34 +120,27 @@ public class Interface extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-            // TODO add your handling code here:
             System.out.println("Iniciando");
+            
+            // Obtenção dos dados da interface
             String url = textURL.getText();
             String searchKey = txtSearch.getText();
             int depth = Integer.parseInt(txtDepth.getText());
             boolean ifDomain = boolDomain.isEnabled();
-            
-            
-            EDACrawler eda = new EDACrawler(searchKey, depth); //instancia de crawler
-            //Payload pl = eda.process(url, url, ifDomain); //links da url
-            Payload pl = eda.recursiveSearch(url, ifDomain); //pesquisa recursiva ainda não operante
-            //System.out.println("pl: "+pl.structureLinks);
+                
+            //instancia de crawler com tema de pesquisa e profundidade
+            EDACrawler eda = new EDACrawler(searchKey, depth); 
+            //Payload pl = eda.process(url, url, ifDomain); //links da url 
+            Payload pl = eda.recursiveSearch(url, ifDomain); //pesquisa recursiva 
+            //printa os niveis de pesquisa para links e imagens obtidos
             printStructure(pl.structureLinks);
             printStructure(pl.structureImgs);
-            JFrame frm = new JFrame();
-//            for (String string : pl.imgs) {
-//                display_image(string);      
-//            }
-            for (ArrayList<String> array : pl.structureImgs) {
-                for (String string : array) {
-                    display_image(string);
-                }
-            }
+            
+            //mostra imagens num painel unico
+            displayImages(pl);
+            
             System.out.println("Fim");
-        } catch (IOException ex) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (HeadlessException | NumberFormatException e) {
-            System.out.println("Headless or Format error: " + e);
+            
         } catch (Exception e) {
             System.out.println("Exception is: " + e);
         }

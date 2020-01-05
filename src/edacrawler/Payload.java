@@ -6,12 +6,11 @@
 
 package edacrawler;
 
-import com.sun.tools.javac.util.ArrayUtils;
 import java.util.ArrayList;
 
 /**
  *
- * @author pedrodias & paulosantos
+ * @author PedroMatias & RodrigoCrispim
  */
 public class Payload {
     public ArrayList<ArrayList<String>> structureImgs = new ArrayList<ArrayList<String>>();
@@ -108,6 +107,7 @@ public class Payload {
             //System.out.println("level: "+structure.size());
             int i = 0;
             for (ArrayList<String> array : structure) {
+                System.out.println(""+array.size()+" itens");
                 System.out.println("level "+(i+1)+": "+array);
                 i++;
             }
