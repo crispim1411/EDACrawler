@@ -4,18 +4,22 @@
  * and open the template in the editor.
  */
 package edacrawler;
+import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 
 /**
  *
@@ -25,16 +29,23 @@ public class ImageCrawler extends JPanel {
     
     public ImageCrawler(Payload pl) {
         try {
-            for (ArrayList<String> array : pl.structureImgs) {
-                for (String string : array) {
-                        Image image = null;
-                        URL image_url = new URL(string);
-                        image = ImageIO.read(image_url); //source
-                        ImageIcon icon = new ImageIcon(image);
-                        JLabel img = new JLabel();
-                        img.setIcon(icon);
-                        add(img);
+            //final int PAGE_AXIS = 3;
+            setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+            for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
+                for (ArrayList<String> arrImage : array) {
+                    Image image = null;
+                    URL image_url = new URL(arrImage.get(0)); 
+                    image = ImageIO.read(image_url); 
+                    ImageIcon icon = new ImageIcon(image);
+                    JLabel img = new JLabel(arrImage.get(1));
+                    
+                    img.setIcon(icon);
+                    img.setHorizontalTextPosition(JLabel.CENTER);
+                    img.setVerticalTextPosition(JLabel.BOTTOM);
+                    
+                    add(img);
                 }
+                
             }
         } catch (Exception e) {
             System.out.println("Exception: "+e);

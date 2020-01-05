@@ -7,10 +7,6 @@
 package edacrawler;
 
 import static edacrawler.Payload.printStructure;
-import java.awt.HeadlessException;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static edacrawler.ImageCrawler.displayImages;
 
 /**
@@ -133,8 +129,7 @@ public class Interface extends javax.swing.JFrame {
             //Payload pl = eda.process(url, url, ifDomain); //links da url 
             Payload pl = eda.recursiveSearch(url, ifDomain); //pesquisa recursiva 
             //printa os niveis de pesquisa para links e imagens obtidos
-            printStructure(pl.structureLinks);
-            printStructure(pl.structureImgs);
+            printStructure(pl);
             
             //mostra imagens num painel unico
             displayImages(pl);

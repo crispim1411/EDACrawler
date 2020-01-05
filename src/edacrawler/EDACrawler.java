@@ -68,7 +68,10 @@ public class EDACrawler {
                 String alt_text = tmp.attr("alt").toLowerCase();
                 if (src.length() > 1) {
                     if (searchKey==null || alt_text.contains(searchKey)) {
-                        payload.imgs.add(src);
+                        ArrayList<String> arrImage = new ArrayList<>();
+                        arrImage.add(src);
+                        arrImage.add(alt_text);
+                        payload.imgs.add(arrImage); //cada imagem é um array [url, alt]
                         //armazenar imagens numa estrutura
                     }
                 }
@@ -99,7 +102,6 @@ public class EDACrawler {
     
     public Payload recursiveSearch(Payload pl, String url, String domain, boolean ifDomain, int level) throws IOException {
         try {
-            System.out.println("current level: "+level+" limit: "+limitLevel);
             if (pl == null) { //Payload vazio               
                 pl = this.process(url, domain, ifDomain); //carrega links level 0
                 pl.addToStructure(pl, level); //links do nivel 0          

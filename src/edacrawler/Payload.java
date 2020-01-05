@@ -13,15 +13,16 @@ import java.util.ArrayList;
  * @author PedroMatias & RodrigoCrispim
  */
 public class Payload {
-    public ArrayList<ArrayList<String>> structureImgs = new ArrayList<ArrayList<String>>();
+    public ArrayList<ArrayList<ArrayList<String>>> structureImgs = new ArrayList<ArrayList<ArrayList<String>>>();
     public ArrayList<ArrayList<String>> structureLinks = new ArrayList<ArrayList<String>>();
     public ArrayList<String> links;
-    public ArrayList<String> imgs;
+    //public ArrayList<String> imgs;
+    public ArrayList<ArrayList<String>> imgs;
     public String html = "";
 
     public Payload() {
         links = new ArrayList<>();
-        imgs = new ArrayList<>();
+        imgs = new ArrayList<ArrayList<String>>(); //imagem: [[src1,alt1], [src2,alt2], ... ]
     }
     
     public void addToStructure(Payload pl, int level) {
@@ -30,22 +31,18 @@ public class Payload {
             level--; //level = index+1
             if (pl != null){
                 for (String string : pl.links) { //pl links é adicionado a structureLinks 
-                    //System.out.println("verificar "+string+" nivel "+(level+1));
-                    if (contains(this.structureLinks, string, level)==false) {
+                    if (containsLink(this.structureLinks, string)==false) {
                         if (level == this.structureLinks.size()){
-                            //System.out.println("index e size: "+level);
                             ArrayList<String> aux = new ArrayList<>();
                             aux.add(string);
                             this.structureLinks.add(level, aux);
                         }
                         else if (level > this.structureLinks.size()){
-                            //System.out.println("index: "+level+" size: "+this.structureLinks.size());
                             ArrayList<String> aux = new ArrayList<>();
                             aux.add(string);
                             this.structureLinks.add(aux);
                         }
                         else {
-                            //System.out.println("index: "+level+" size: "+this.structureLinks.size());
                             ArrayList<String> aux = new ArrayList<>();
                             aux = this.structureLinks.get(level);
                             aux.add(string);
@@ -57,26 +54,22 @@ public class Payload {
                 //printStructure(pl.structureLinks);
                 //System.out.println("\n");
 
-                for (String string : pl.imgs) { //pl links é adicionado a structureLinks
-                    //System.out.println("verificar "+string+" nivel "+(level+1));
-                    if (contains(this.structureImgs, string, level) == false) {
-                        if (level == this.structureImgs.size()){
-                            //System.out.println("index e size: "+level);
-                            ArrayList<String> aux = new ArrayList<>();
-                            aux.add(string);
+                for (ArrayList<String> arrImage : pl.imgs) {//pl links é adicionado a structureLinks
+                    if (containsImg(this.structureImgs, arrImage) == false) {
+                        if (level == this.structureImgs.size()){ 
+                            ArrayList<ArrayList<String>> aux = new ArrayList<>();
+                            aux.add(arrImage);
                             this.structureImgs.add(level, aux);
                         }
                         else if (level > this.structureImgs.size()){
-                            //System.out.println("index: "+level+" size: "+this.structureImgs.size());
-                            ArrayList<String> aux = new ArrayList<>();
-                            aux.add(string);
+                            ArrayList<ArrayList<String>> aux = new ArrayList<>();
+                            aux.add(arrImage);
                             this.structureImgs.add(aux);
                         }
                         else {
-                            //System.out.println("index: "+level+" size: "+this.structureImgs.size());
-                            ArrayList<String> aux = new ArrayList<>();
+                            ArrayList<ArrayList<String>> aux = new ArrayList<>();
                             aux = this.structureImgs.get(level);
-                            aux.add(string);
+                            aux.add(arrImage);
                         }
                     }
                     //System.out.println("plimgs: "+pl.structureImgs.get(level));
@@ -90,23 +83,34 @@ public class Payload {
         }
     }
     
-    public boolean contains(ArrayList<ArrayList<String>> structure, String url, int level){
-        //System.out.println("level: "+level+", size: "+structure.size());
-        
+    public boolean containsImg(ArrayList<ArrayList<ArrayList<String>>> structure, ArrayList<String> arrImage){
         for (int i=0; i<structure.size(); i++){
-            if (structure.get(i).contains(url)) {
-                //System.out.println("existe no nivel "+(i+1));
+            if (structure.get(i).contains(arrImage)) {
                 return true;
             }
         } 
         return false;
     }
     
-    public static void printStructure(ArrayList<ArrayList<String>> structure) {
-        if (structure != null) {
-            //System.out.println("level: "+structure.size());
+    public boolean containsLink(ArrayList<ArrayList<String>> structure, String url) {
+        for (int i=0;i<structure.size();i++) {
+            if (structure.get(i).contains(url)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static void printStructure(Payload pl) {
+        if (pl != null) {
             int i = 0;
-            for (ArrayList<String> array : structure) {
+            for (ArrayList<String> array : pl.structureLinks) {
+                System.out.println(""+array.size()+" itens");
+                System.out.println("level "+(i+1)+": "+array);
+                i++;
+            }
+            i = 0;
+            for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
                 System.out.println(""+array.size()+" itens");
                 System.out.println("level "+(i+1)+": "+array);
                 i++;
