@@ -131,16 +131,18 @@ public class Interface extends javax.swing.JFrame {
             //printa os niveis de pesquisa para links e imagens obtidos
             printStructure(pl);
             
+            //ordena as imagens de cada level pelo texto alt
+            pl.insertionSort();
             //mostra imagens num painel unico
             displayImages(pl);
-            
+
             System.out.println("Fim");
             
         } catch (Exception e) {
             System.out.println("Exception is: " + e);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    
     /**
      * @param args the command line arguments
      */

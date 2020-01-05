@@ -83,6 +83,28 @@ public class Payload {
         }
     }
     
+    public void insertionSort() {
+        try {
+            int i,j;
+
+            for (ArrayList<ArrayList<String>> arrLevel : this.structureImgs) {
+                for (i = 1; i < arrLevel.size(); i++) {
+                    ArrayList<String> arr= arrLevel.get(i);
+                    String string = arr.get(1);
+                    j = i;
+                    while((j > 0) && (arrLevel.get(j - 1).get(1).compareTo(string))>0) {
+                        arrLevel.set(j,arrLevel.get(j - 1));
+                        j--;
+                    }
+                    arrLevel.set(j,arr);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Exception: "+e);
+        }
+        
+    }
+    
     public boolean containsImg(ArrayList<ArrayList<ArrayList<String>>> structure, ArrayList<String> arrImage){
         for (int i=0; i<structure.size(); i++){
             if (structure.get(i).contains(arrImage)) {

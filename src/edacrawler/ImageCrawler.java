@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -29,9 +30,11 @@ public class ImageCrawler extends JPanel {
     
     public ImageCrawler(Payload pl) {
         try {
-            //final int PAGE_AXIS = 3;
+            int i=0;
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
+                add(new JLabel("LEVEL "+i));
+                add(Box.createVerticalStrut(10));
                 for (ArrayList<String> arrImage : array) {
                     Image image = null;
                     URL image_url = new URL(arrImage.get(0)); 
@@ -44,8 +47,10 @@ public class ImageCrawler extends JPanel {
                     img.setVerticalTextPosition(JLabel.BOTTOM);
                     
                     add(img);
+                    add(Box.createVerticalStrut(10));
                 }
-                
+                i++;
+                add(Box.createVerticalStrut(200));
             }
         } catch (Exception e) {
             System.out.println("Exception: "+e);
