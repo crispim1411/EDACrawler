@@ -13,8 +13,8 @@ import java.util.ArrayList;
  * @author PedroMatias & RodrigoCrispim
  */
 public class Payload {
-    public ArrayList<ArrayList<ArrayList<String>>> structureImgs = new ArrayList<ArrayList<ArrayList<String>>>();
-    public ArrayList<ArrayList<String>> structureLinks = new ArrayList<ArrayList<String>>();
+    public ArrayList<ArrayList<ArrayList<String>>> structureImgs = new ArrayList<>();
+    public ArrayList<ArrayList<String>> structureLinks = new ArrayList<>();
     public ArrayList<String> links;
     //public ArrayList<String> imgs;
     public ArrayList<ArrayList<String>> imgs;
@@ -22,7 +22,7 @@ public class Payload {
 
     public Payload() {
         links = new ArrayList<>();
-        imgs = new ArrayList<ArrayList<String>>(); //imagem: [[src1,alt1], [src2,alt2], ... ]
+        imgs = new ArrayList<>(); //imagem: [[src1,alt1], [src2,alt2], ... ]
     }
     
     public void addToStructure(Payload pl, int level) {

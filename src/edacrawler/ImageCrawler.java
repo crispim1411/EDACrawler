@@ -6,7 +6,12 @@
 package edacrawler;
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
+import java.awt.Graphics2D;
+import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,7 +32,6 @@ import javax.swing.JSeparator;
  * @author PedroMatias & RodrigoCrispim
  */
 public class ImageCrawler extends JPanel {
-    
     public ImageCrawler(Payload pl) {
         try {
             int i=1;
@@ -41,7 +45,7 @@ public class ImageCrawler extends JPanel {
                     image = ImageIO.read(image_url); 
                     ImageIcon icon = new ImageIcon(image);
                     String title = arrImage.get(1);
-                    if (title == "ZZ") title = "Sem título";
+                    if ("ZZ".equals(title)) title = "Sem título";
                     JLabel img = new JLabel(title);
                     
                     img.setIcon(icon);
@@ -54,7 +58,7 @@ public class ImageCrawler extends JPanel {
                 i++;
                 add(Box.createVerticalStrut(200));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Exception: "+e);
         }
     }
@@ -81,9 +85,8 @@ public class ImageCrawler extends JPanel {
                 JOptionPane.showMessageDialog(null, "Nenhuma imagem com este tema encontrada","Sem resultados", JOptionPane.ERROR_MESSAGE);
             }
             
-        } catch (Exception e){
+        } catch (HeadlessException e){
             System.out.println("Exception: "+e);
         }
     }
-
 }

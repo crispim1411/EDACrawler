@@ -16,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import static edacrawler.ImageCrawler.displayImages;
+import java.util.ArrayList;
 /**
  *
  * @author pedrodias & paulosantos
@@ -33,7 +34,7 @@ public class Main {
         //Payload pl = eda.recursiveSearch(url);
         //System.out.println("pl: "+pl.links);
 
-        for (String string : pl.imgs) {
+        for (ArrayList<String> string : pl.imgs) {
             displayImages(pl);      
         }
 
