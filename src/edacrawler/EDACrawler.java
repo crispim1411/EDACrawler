@@ -6,8 +6,11 @@
 package edacrawler;
 
 import java.io.IOException;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -24,10 +27,19 @@ public class EDACrawler {
     public EDACrawler(String string, int level) throws IOException {
         //cria crawler com texto de busca e limite de profundidade de pesquisa
         if (string != null){
-            this.searchKey = string.toLowerCase();    
+            this.searchKey = removeDiacriticalMarks(string).toLowerCase();    
         }
 
         this.limitLevel = level;
+    }
+    
+    public static String removeDiacriticalMarks(String string) {
+        try{
+            return Normalizer.normalize(string, Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        } catch (Exception e) {
+            System.out.println("Exception removeDiacriticalMarks: "+e);
+            return null;
+        }
     }
 
     public Payload process(String url, String domain, boolean ifDomain) throws IOException {
@@ -65,14 +77,17 @@ public class EDACrawler {
             while (aux.hasNext()) {
                 tmp = aux.next();
                 String src = tmp.attr("abs:src");
-                String alt_text = tmp.attr("alt").toLowerCase();
+                String alt_text = tmp.attr("alt");
                 if (src.length() > 1) {
-                    if (searchKey==null || alt_text.contains(searchKey)) {
+                    if (searchKey==null || removeDiacriticalMarks(alt_text).toLowerCase().contains(searchKey)) {
                         ArrayList<String> arrImage = new ArrayList<>();
                         arrImage.add(src);
+                        
+                        if (alt_text != "" && alt_text.length()>1) alt_text = alt_text.substring(0, 1).toUpperCase() + alt_text.substring(1);
+                        else alt_text = "ZZ"; //forçar ir pro fim da lista
+                        
                         arrImage.add(alt_text);
                         payload.imgs.add(arrImage); //cada imagem é um array [url, alt]
-                        //armazenar imagens numa estrutura
                     }
                 }
             }
@@ -85,7 +100,7 @@ public class EDACrawler {
             System.out.println("IOException Process: " + e);
           return null;
         } catch (Exception e) {
-            System.out.println("Exception is: " + e);
+            System.out.println("Exception Process: " + e);
           return null;
         }
     }
@@ -117,8 +132,9 @@ public class EDACrawler {
                 while (aux.hasNext()) { //se há links a iterar
                     nextUrl = aux.next(); //pega o proximo
                     //System.out.println(nextUrl);
-
-                    if (contains(pl.structureLinks, nextUrl, level) == false) { //se o link não foi visitado
+                    //System.out.println("analisando: "+nextUrl);
+                    if (visited(pl.structureLinks, nextUrl, level) == false) { //se o link não foi visitado
+                        //System.out.println("visitando: "+nextUrl);
                         Payload tmp = this.process(nextUrl, domain, ifDomain); //obtem payload
                         if (tmp != null){                        
                             pl.addToStructure(tmp, level+1);
@@ -136,15 +152,18 @@ public class EDACrawler {
             return null;
         }
         catch (Exception e) {
-            System.out.println("Exception is: " + e);
+            System.out.println("Exception recursiveSearch: " + e);
           return null;
         }
     }
     
-    public boolean contains(ArrayList<ArrayList<String>> structure, String url, int level){
+    public boolean visited(ArrayList<ArrayList<String>> structure, String url, int level){
         //System.out.println("level: "+level+", size: "+structure.size());
-        for (int i=level-1; i>0; i--){
-            if (structure.get(i).contains(url)) {
+        level--;
+        for (int i=0; i<structure.size(); i++){
+            //System.out.println("verificando se "+url+" lvl"+level+" existe no get "+i);
+            if (structure.get(i).contains(url) && i!=level) {
+                //System.out.println("existe no lvl"+(i+1) +"get "+i);
                 return true;
             }
         } 

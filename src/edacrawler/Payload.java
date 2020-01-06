@@ -31,7 +31,7 @@ public class Payload {
             level--; //level = index+1
             if (pl != null){
                 for (String string : pl.links) { //pl links é adicionado a structureLinks 
-                    if (containsLink(this.structureLinks, string)==false) {
+                    if (containsLink(string)==false) {
                         if (level == this.structureLinks.size()){
                             ArrayList<String> aux = new ArrayList<>();
                             aux.add(string);
@@ -55,7 +55,7 @@ public class Payload {
                 //System.out.println("\n");
 
                 for (ArrayList<String> arrImage : pl.imgs) {//pl links é adicionado a structureLinks
-                    if (containsImg(this.structureImgs, arrImage) == false) {
+                    if (containsImg(arrImage) == false) {
                         if (level == this.structureImgs.size()){ 
                             ArrayList<ArrayList<String>> aux = new ArrayList<>();
                             aux.add(arrImage);
@@ -79,7 +79,7 @@ public class Payload {
                 //System.out.println("\n");
             }
         } catch (Exception e) {
-            System.out.println("Exception is: " + e);
+            System.out.println("Exception addToStructure: " + e);
         }
     }
     
@@ -100,23 +100,23 @@ public class Payload {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Exception: "+e);
+            System.out.println("Exception insertionSort: "+e);
         }
         
     }
     
-    public boolean containsImg(ArrayList<ArrayList<ArrayList<String>>> structure, ArrayList<String> arrImage){
-        for (int i=0; i<structure.size(); i++){
-            if (structure.get(i).contains(arrImage)) {
+    public boolean containsImg(ArrayList<String> arrImage){
+        for (int i=0; i<this.structureImgs.size(); i++){
+            if (this.structureImgs.get(i).contains(arrImage)) {
                 return true;
             }
         } 
         return false;
     }
     
-    public boolean containsLink(ArrayList<ArrayList<String>> structure, String url) {
-        for (int i=0;i<structure.size();i++) {
-            if (structure.get(i).contains(url)) {
+    public boolean containsLink(String url) {
+        for (int i=0;i<this.structureLinks.size();i++) {
+            if (this.structureLinks.get(i).contains(url)) {
                 return true;
             }
         }

@@ -30,7 +30,7 @@ public class ImageCrawler extends JPanel {
     
     public ImageCrawler(Payload pl) {
         try {
-            int i=0;
+            int i=1;
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
                 add(new JLabel("LEVEL "+i));
@@ -40,7 +40,9 @@ public class ImageCrawler extends JPanel {
                     URL image_url = new URL(arrImage.get(0)); 
                     image = ImageIO.read(image_url); 
                     ImageIcon icon = new ImageIcon(image);
-                    JLabel img = new JLabel(arrImage.get(1));
+                    String title = arrImage.get(1);
+                    if (title == "ZZ") title = "Sem título";
+                    JLabel img = new JLabel(title);
                     
                     img.setIcon(icon);
                     img.setHorizontalTextPosition(JLabel.CENTER);
