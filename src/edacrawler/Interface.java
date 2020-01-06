@@ -12,7 +12,7 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.PopupMenu;
 import java.awt.event.ActionEvent;
-//import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -41,13 +41,16 @@ public class Interface extends javax.swing.JFrame {
     
     private RenderedImage img;
     
+    
     /** Creates new form Interface */
     public Interface() {
         initComponents();
         
+        //cria uma nova directoria chamda edaTPimgs
         File dir = new File("c:\\edaTPimgs");
         dir.mkdir();
         
+        //aponta o open e o savefilechooser para o dir e filtra a extensão de nome de ficheiro para ficheiros png
         openFileChooser = new JFileChooser();
         openFileChooser.setCurrentDirectory(dir);
         openFileChooser.setFileFilter(new FileNameExtensionFilter("Imagens (.png)", "png"));
@@ -103,7 +106,7 @@ public class Interface extends javax.swing.JFrame {
 
         boolDomain.setText("Apenas links do mesmo dominio");
 
-        jButton2.setText("Abrir ficheiro...");
+        jButton2.setText("Procurar imagem...");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -112,7 +115,7 @@ public class Interface extends javax.swing.JFrame {
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
-        jButton3.setText("Guardar...");
+        jButton3.setText("Buscar e guardar...");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -222,13 +225,20 @@ public class Interface extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        //abre a janela para podermos escolher uma imagem
         int returnValue = openFileChooser.showOpenDialog(this);
-        
+        //condição para ver se o JFileChooser aprova o returnValue
         if(returnValue == JFileChooser.APPROVE_OPTION){
             try {
+                //lê a imagem do ficheiro escolhido
                img = ImageIO.read(openFileChooser.getSelectedFile());
-               JLabel picLabel = new JLabel(new ImageIcon((Image) img));
-               add(picLabel);
+               //setup para mostrar a imagem escolhida
+               JFrame frm = new JFrame();
+               JLabel lbl = new JLabel();
+               lbl.setIcon (new ImageIcon((Image) img));
+               frm.getContentPane().add(lbl);
+               frm.pack();
+               frm.setVisible(true);
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -245,21 +255,25 @@ public class Interface extends javax.swing.JFrame {
                 
             //instancia de crawler com tema de pesquisa e profundidade
             EDACrawler eda = new EDACrawler(searchKey, depth);
-            //Payload pl = eda.process(url, url, ifDomain); //links da url 
             Payload pl = eda.recursiveSearch(url, ifDomain);
+            displayImages(pl);
             
-            //int returnValue = saveFileChooser.showSaveDialog(this);
-            
-            //if(returnValue == JFileChooser.APPROVE_OPTION){
                 for(ArrayList<ArrayList<String>> array : pl.structureImgs){
                     for(ArrayList<String> arrImage : array){
+                        //abre a janela para podermos guardar uma imagem
                         int returnValue = saveFileChooser.showSaveDialog(this);
+                        //condição para ver se o JFileChooser aprova o returnValue
                         if(returnValue == JFileChooser.APPROVE_OPTION){
                         URL image_url = null;
-                        image_url = new URL (arrImage.get(0));                           
+                        //vai buscar o URL das imagens contidas no payload pl
+                        image_url = new URL (arrImage.get(0)); 
+                        //converte o URL em imagem
                         img = ImageIO.read(image_url);
+                        //escreve as imagens 
                         ImageIO.write((RenderedImage) img, "png", saveFileChooser.getSelectedFile());
-                    }                       
+                    }  
+                        //ao clicar em cancel termina o ciclo for
+                        else break;                     
                 }
             }
         } catch (IOException ex) { 
@@ -296,6 +310,7 @@ public class Interface extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new Interface().setVisible(true);
             }
