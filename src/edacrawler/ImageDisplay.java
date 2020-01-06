@@ -26,9 +26,9 @@ import javax.swing.JSeparator;
  *
  * @author PedroMatias & RodrigoCrispim
  */
-public class ImageCrawler extends JPanel {
+public class ImageDisplay extends JPanel {
     
-    public ImageCrawler(Payload pl) {
+    public ImageDisplay(Payload pl) {
         try {
             int i=1;
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -63,7 +63,7 @@ public class ImageCrawler extends JPanel {
         try {
             if (pl.structureImgs.isEmpty() == false) {
                 //Panel e Frame
-                ImageCrawler imagesJPanel = new ImageCrawler(pl); //imagens adicionadas em JPanel
+                ImageDisplay imagesJPanel = new ImageDisplay(pl); //imagens adicionadas em JPanel
                 JFrame frm = new JFrame();
                 //imagens
                 frm.add(imagesJPanel); //adiciona JPanel ao JFrame

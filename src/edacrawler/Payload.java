@@ -16,7 +16,6 @@ public class Payload {
     public ArrayList<ArrayList<ArrayList<String>>> structureImgs = new ArrayList<ArrayList<ArrayList<String>>>();
     public ArrayList<ArrayList<String>> structureLinks = new ArrayList<ArrayList<String>>();
     public ArrayList<String> links;
-    //public ArrayList<String> imgs;
     public ArrayList<ArrayList<String>> imgs;
     public String html = "";
 

@@ -7,7 +7,7 @@
 package edacrawler;
 
 import static edacrawler.Payload.printStructure;
-import static edacrawler.ImageCrawler.displayImages;
+import static edacrawler.ImageDisplay.displayImages;
 
 /**
  *

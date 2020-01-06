@@ -10,7 +10,6 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Locale;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -84,6 +83,7 @@ public class EDACrawler {
                         arrImage.add(src);
                         
                         if (alt_text != "" && alt_text.length()>1) alt_text = alt_text.substring(0, 1).toUpperCase() + alt_text.substring(1);
+                        else if (alt_text.length() == 1) alt_text = alt_text.toUpperCase();
                         else alt_text = "ZZ"; //forçar ir pro fim da lista
                         
                         arrImage.add(alt_text);
@@ -118,17 +118,18 @@ public class EDACrawler {
     public Payload recursiveSearch(Payload pl, String url, String domain, boolean ifDomain, int level) throws IOException {
         try {
             if (pl == null) { //Payload vazio               
-                pl = this.process(url, domain, ifDomain); //carrega links level 0
-                pl.addToStructure(pl, level); //links do nivel 0          
+                pl = this.process(url, domain, ifDomain); //carrega links level 1
+                pl.addToStructure(pl, level); //links do nivel 1          
             }
 
-            //if (pl.structureLinks.size() > level) { 
-            if (level < this.limitLevel) {
+            //se pl possui size >= level possui iteraveis, se level limite ainda não alcançado
+            if (pl.structureLinks.size() >= level && level < this.limitLevel) { 
+            //if (level < this.limitLevel) {
 
                 String nextUrl;
                 Iterator<String> aux = pl.structureLinks.get(level-1).iterator(); //links do level iteravel
                 //System.out.println("level: "+level+": estrutura obtida: "+pl.structureLinks.get(level));
-
+                
                 while (aux.hasNext()) { //se há links a iterar
                     nextUrl = aux.next(); //pega o proximo
                     //System.out.println(nextUrl);
@@ -136,13 +137,16 @@ public class EDACrawler {
                     if (visited(pl.structureLinks, nextUrl, level) == false) { //se o link não foi visitado
                         //System.out.println("visitando: "+nextUrl);
                         Payload tmp = this.process(nextUrl, domain, ifDomain); //obtem payload
+                        //System.out.println("level "+(level+1)+ " pl obtido: "+tmp.links);
                         if (tmp != null){                        
                             pl.addToStructure(tmp, level+1);
                             //System.out.println("structure updated: "+pl.structureLinks);
                             recursiveSearch(pl, nextUrl, domain,ifDomain, level+1); //entra no proximo nivel
                         }
                     }
+                    //else { System.out.println("\nja visitado: "+nextUrl);}
                 }
+                //System.out.println("\nsem mais iteraveis\n\n");
             }
 
             return pl;
