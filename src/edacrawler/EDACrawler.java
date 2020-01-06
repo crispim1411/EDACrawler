@@ -52,7 +52,11 @@ public class EDACrawler {
                 url += "/";
             }
 
+//<<<<<<< Updated upstream
             Document doc = Jsoup.connect(url).ignoreContentType(true).get();
+//=======
+        //Document doc = Jsoup.connect(url).ignoreContentType(true).get();
+//>>>>>>> Stashed changes
 
             Elements links = doc.select("a");
             Iterator<Element> aux = links.iterator();
