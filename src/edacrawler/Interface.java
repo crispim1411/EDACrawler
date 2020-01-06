@@ -130,11 +130,11 @@ public class Interface extends javax.swing.JFrame {
             Payload pl = eda.recursiveSearch(url, ifDomain); //pesquisa recursiva 
             //printa os niveis de pesquisa para links e imagens obtidos
             printStructure(pl);
-            
             //ordena as imagens de cada level pelo texto alt
             pl.insertionSort();
             //mostra imagens num painel unico
             displayImages(pl);
+            
 
             System.out.println("Fim");
             

@@ -10,6 +10,7 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Iterator;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -51,47 +52,56 @@ public class EDACrawler {
                 url += "/";
             }
 
-            Document doc = Jsoup.connect(url).ignoreContentType(true).get();
+            //Document doc = Jsoup.connect(url).timeout(10000).ignoreContentType(true).get();
+            //Conexão
+            Connection con = Jsoup.connect(url).ignoreContentType(true).timeout(10000);
+            Connection.Response resp = con.execute();
+            Document doc = null;
+            
+            if (resp.statusCode() == 200) {
+                doc = con.get();
+                Elements links = doc.select("a");
+                Iterator<Element> aux = links.iterator();
 
-            Elements links = doc.select("a");
-            Iterator<Element> aux = links.iterator();
-
-            while (aux.hasNext()) {
-                String href = aux.next().attr("abs:href");
-                if (href.length() > 1) {
-                    if (ifDomain) { //se flag de dominio so adiciona se for do mesmo dominio
-                        if (href.contains(domain)) {
-                            payload.links.add(href);  
+                while (aux.hasNext()) {
+                    String href = aux.next().attr("abs:href");
+                    if (href.length() > 1) {
+                        if (ifDomain) { //se flag de dominio so adiciona se for do mesmo dominio
+                            if (href.contains(domain)) {
+                                payload.links.add(href);  
+                            }
+                        }
+                        else {
+                            payload.links.add(href);
                         }
                     }
-                    else {
-                        payload.links.add(href);
+                }
+
+                Elements imgs = doc.select("img");
+                aux = imgs.iterator();
+                Element tmp;
+                while (aux.hasNext()) {
+                    tmp = aux.next();
+                    String src = tmp.attr("abs:src");
+                    String alt_text = tmp.attr("alt");
+                    if (src.length() > 1) {
+                        if (searchKey==null || removeDiacriticalMarks(alt_text).toLowerCase().contains(searchKey)) {
+                            ArrayList<String> arrImage = new ArrayList<>();
+                            arrImage.add(src);
+
+                            if (alt_text != "" && alt_text.length()>1) alt_text = alt_text.substring(0, 1).toUpperCase() + alt_text.substring(1);
+                            else if (alt_text.length() == 1) alt_text = alt_text.toUpperCase();
+                            else alt_text = "ZZ"; //forçar ir pro fim da lista
+
+                            arrImage.add(alt_text);
+                            payload.imgs.add(arrImage); //cada imagem é um array [url, alt]
+                        }
                     }
                 }
             }
-
-            Elements imgs = doc.select("img");
-            aux = imgs.iterator();
-            Element tmp;
-            while (aux.hasNext()) {
-                tmp = aux.next();
-                String src = tmp.attr("abs:src");
-                String alt_text = tmp.attr("alt");
-                if (src.length() > 1) {
-                    if (searchKey==null || removeDiacriticalMarks(alt_text).toLowerCase().contains(searchKey)) {
-                        ArrayList<String> arrImage = new ArrayList<>();
-                        arrImage.add(src);
-                        
-                        if (alt_text != "" && alt_text.length()>1) alt_text = alt_text.substring(0, 1).toUpperCase() + alt_text.substring(1);
-                        else if (alt_text.length() == 1) alt_text = alt_text.toUpperCase();
-                        else alt_text = "ZZ"; //forçar ir pro fim da lista
-                        
-                        arrImage.add(alt_text);
-                        payload.imgs.add(arrImage); //cada imagem é um array [url, alt]
-                    }
-                }
+            else {
+                System.out.println("HTTP Error: "+resp.statusCode());
             }
-
             payload.html = doc.html();
 
             return payload;

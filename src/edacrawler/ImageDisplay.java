@@ -5,6 +5,7 @@
  */
 package edacrawler;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.ComponentOrientation;
 import java.awt.Image;
 import java.io.IOException;
@@ -62,16 +63,17 @@ public class ImageDisplay extends JPanel {
     public static void displayImages(Payload pl) throws IOException {
         try {
             if (pl.structureImgs.isEmpty() == false) {
+   
                 //Panel e Frame
-                ImageDisplay imagesJPanel = new ImageDisplay(pl); //imagens adicionadas em JPanel
+                ImageDisplay imgsJPanel = new ImageDisplay(pl); //imagens adicionadas em JPanel
                 JFrame frm = new JFrame();
                 //imagens
-                frm.add(imagesJPanel); //adiciona JPanel ao JFrame
+                frm.add(imgsJPanel); //adiciona JPanel ao JFrame
                 frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
                 frm.pack(); //tamanho do JFrame de acordo com o tamanho das imagens 
 
                 //scroll
-                JScrollPane scrPane = new JScrollPane(imagesJPanel); //Um JPanel com scroll das imagens
+                JScrollPane scrPane = new JScrollPane(imgsJPanel); //Um JPanel com scroll das imagens
                 scrPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
                 scrPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 frm.getContentPane().add(scrPane); //adiciona elemento de scroll ao JFrame
