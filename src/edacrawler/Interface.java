@@ -242,14 +242,18 @@ public class Interface extends javax.swing.JFrame {
         if(returnValue == JFileChooser.APPROVE_OPTION){
             try {
                 //lê a imagem do ficheiro escolhido
-               img = ImageIO.read(openFileChooser.getSelectedFile());
-               //setup para mostrar a imagem escolhida
-               JFrame frm = new JFrame();
-               JLabel lbl = new JLabel();
-               lbl.setIcon (new ImageIcon((Image) img));
-               frm.getContentPane().add(lbl);
-               frm.pack();
-               frm.setVisible(true);
+                File getFileImg = openFileChooser.getSelectedFile();
+                String imgTitle = getFileImg.getName();
+                img = ImageIO.read(getFileImg);
+                //setup para mostrar a imagem escolhida
+                JFrame frm = new JFrame();
+                JLabel lbl = new JLabel(imgTitle);
+                lbl.setIcon (new ImageIcon((Image) img));
+                lbl.setHorizontalTextPosition(JLabel.CENTER);
+                lbl.setVerticalTextPosition(JLabel.BOTTOM);
+                frm.getContentPane().add(lbl);
+                frm.pack();
+                frm.setVisible(true);
             } catch (IOException ex) {
                 Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
             }
