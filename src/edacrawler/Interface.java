@@ -7,7 +7,6 @@
 package edacrawler;
 
 import static edacrawler.EDACrawler.removeDiacriticalMarks;
-import static edacrawler.Payload.printStructure;
 import static edacrawler.ImageToDisplay.displayImages;
 import static edacrawler.ImageToDisplay.displayImagesByFiles;
 import static edacrawler.ImageToDisplay.imagesToSave;
@@ -49,9 +48,9 @@ public class Interface extends javax.swing.JFrame {
     
     /** Creates new form Interface */
     public Interface() {
-        initComponents();
+        initComponents(); 
         
-        createDir();
+        createDir(); //cria pasta aonde serão salvas as imagens
         
         //aponta o open e o savefilechooser para o dir e filtra a extensão de nome de ficheiro para ficheiros png
         openFileChooser = new JFileChooser();
@@ -60,7 +59,6 @@ public class Interface extends javax.swing.JFrame {
         saveFileChooser = new JFileChooser();
         saveFileChooser.setCurrentDirectory(dir);
         saveFileChooser.setFileFilter(new FileNameExtensionFilter("Imagens (.png)", "png"));
-
     }
     
     
@@ -201,7 +199,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-            System.out.println("Iniciando");
+            Logger.getLogger(Interface.class.getName()).log(Level.INFO, null,"Iniciando");
             
             // Obtenção dos dados da interface
             String url = textURL.getText();
@@ -220,11 +218,10 @@ public class Interface extends javax.swing.JFrame {
             //mostra imagens num painel unico
             displayImages(pl);
             
-
-            System.out.println("Fim");
+            Logger.getLogger(Interface.class.getName()).log(Level.INFO, null,"Fim");
             
         } catch (Exception e) {
-            System.out.println("Exception: " + e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
           
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -240,7 +237,7 @@ public class Interface extends javax.swing.JFrame {
                 displayImagesByFiles(files);
             } 
         } catch (Exception e){
-            System.out.println("Exception: "+e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -263,8 +260,8 @@ public class Interface extends javax.swing.JFrame {
         } catch (IOException ex) { 
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception e) {
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
             if (!dir.exists()){
-                System.out.println("Pasta não existe");
                 createDir();
             }
         }
@@ -307,18 +304,31 @@ public class Interface extends javax.swing.JFrame {
     }
     
     public final void createDir(){
-        //cria uma nova directoria chamda edaTPimgs
-        String OS = System.getProperty("os.name");
-        //File dir;
-        if (OS.compareTo("Windows")==0) {absPath = "c:\\"; System.out.println("SO: Windows");}
-        else if (OS.compareTo("Linux")==0) {absPath = "/home/crispim/Documents/"; System.out.println("SO: Linux");}
-        else {absPath = "c:\\"; System.out.println("SO: Não reconhecido");}
-        
-        dir = new File(absPath.concat("edaTPimgs"));
-        dir.mkdir();
-        System.out.println("Pasta edaTPimgs criada em: "+absPath);
-        
-        
+        try {
+            //cria uma nova directoria chamda edaTPimgs
+            String OS = System.getProperty("os.name");
+            
+            //absolutePath com base o sistema operativo
+            if (OS.compareTo("Windows")==0) {
+                absPath = "c:\\"; 
+                Logger.getLogger(Interface.class.getName()).log(Level.CONFIG, null,"SO: Windows");
+            }
+            else if (OS.compareTo("Linux")==0) {
+                absPath = "/home/crispim/Documents/"; 
+                Logger.getLogger(Interface.class.getName()).log(Level.CONFIG, null,"SO: Linux");
+            }
+            else {
+                absPath = "c:\\"; 
+                Logger.getLogger(Interface.class.getName()).log(Level.WARNING, null,"SO: Não reconhecido");
+            }
+
+            dir = new File(absPath.concat("edaTPimgs"));
+            dir.mkdir();
+            Logger.getLogger(Interface.class.getName()).log(Level.CONFIG, null,"Pasta edaTPimgs criada em: "+absPath);
+            
+        } catch (Exception e){
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

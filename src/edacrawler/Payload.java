@@ -7,6 +7,8 @@
 package edacrawler;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -78,7 +80,7 @@ public class Payload {
                 //System.out.println("\n");
             }
         } catch (Exception e) {
-            System.out.println("Exception addToStructure: " + e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
@@ -99,44 +101,52 @@ public class Payload {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Exception insertionSort: "+e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
         
     }
     
     public boolean containsImg(ArrayList<String> arrImage){
-        for (int i=0; i<this.structureImgs.size(); i++){
-            if (this.structureImgs.get(i).contains(arrImage)) {
-                return true;
-            }
-        } 
+        try{
+            for (int i=0; i<this.structureImgs.size(); i++){
+                if (this.structureImgs.get(i).contains(arrImage)) {
+                    return true;
+                }
+            } 
+        } catch (Exception e) {
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
+        }
         return false;
     }
     
     public boolean containsLink(String url) {
-        for (int i=0;i<this.structureLinks.size();i++) {
-            if (this.structureLinks.get(i).contains(url)) {
-                return true;
+        try{
+            for (int i=0;i<this.structureLinks.size();i++) {
+                if (this.structureLinks.get(i).contains(url)) {
+                    return true;
+                }
             }
+        } catch (Exception e) {
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
         return false;
     }
     
-    public static void printStructure(Payload pl) {
-        if (pl != null) {
-            int i = 0;
-            for (ArrayList<String> array : pl.structureLinks) {
-                System.out.println(""+array.size()+" itens");
-                System.out.println("level "+(i+1)+": "+array);
-                i++;
-            }
-            i = 0;
-            for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
-                System.out.println(""+array.size()+" itens");
-                System.out.println("level "+(i+1)+": "+array);
-                i++;
-            }
-        }
-    }
+//    public static void printStructure(Payload pl) {
+//        if (pl != null) {
+//            int i = 0;
+//            for (ArrayList<String> array : pl.structureLinks) {
+//                System.out.println(""+array.size()+" itens");
+//                System.out.println("level "+(i+1)+": "+array);
+//                i++;
+//            }
+//            i = 0;
+//            for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
+//                System.out.println(""+array.size()+" itens");
+//                System.out.println("level "+(i+1)+": "+array);
+//                i++;
+//            }
+//        }
+//    }
     
 }

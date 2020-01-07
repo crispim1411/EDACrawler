@@ -10,11 +10,14 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import static sun.jvm.hotspot.HelloWorld.e;
 
 /**
  *
@@ -29,7 +32,6 @@ public class EDACrawler {
         if (string != null){
             this.searchKey = removeDiacriticalMarks(string).toLowerCase();    
         }
-
         this.limitLevel = level;
     }
     
@@ -37,7 +39,7 @@ public class EDACrawler {
         try{
             return Normalizer.normalize(string, Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
         } catch (Exception e) {
-            System.out.println("Exception removeDiacriticalMarks: "+e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
             return null;
         }
     }
@@ -100,17 +102,17 @@ public class EDACrawler {
                 }
             }
             else {
-                System.out.println("HTTP Error: "+resp.statusCode());
+                Logger.getLogger(Interface.class.getName()).log(Level.WARNING, null, resp.statusCode());
             }
             payload.html = doc.html();
 
             return payload;
             
         } catch (IOException e) {
-            System.out.println("IOException Process: " + e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
           return null;
         } catch (Exception e) {
-            System.out.println("Exception Process: " + e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
           return null;
         }
     }
@@ -162,25 +164,29 @@ public class EDACrawler {
             return pl;
             
         } catch (IOException e) {
-            System.out.println("IOException Payload: "+e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
             return null;
         }
         catch (Exception e) {
-            System.out.println("Exception recursiveSearch: " + e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
           return null;
         }
     }
     
     public boolean visited(ArrayList<ArrayList<String>> structure, String url, int level){
         //System.out.println("level: "+level+", size: "+structure.size());
-        level--;
-        for (int i=0; i<structure.size(); i++){
-            //System.out.println("verificando se "+url+" lvl"+level+" existe no get "+i);
-            if (structure.get(i).contains(url) && i!=level) {
-                //System.out.println("existe no lvl"+(i+1) +"get "+i);
-                return true;
-            }
-        } 
+        try{
+            level--;
+            for (int i=0; i<structure.size(); i++){
+                //System.out.println("verificando se "+url+" lvl"+level+" existe no get "+i);
+                if (structure.get(i).contains(url) && i!=level) {
+                    //System.out.println("existe no lvl"+(i+1) +"get "+i);
+                    return true;
+                }
+            } 
+        } catch (Exception e){
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
+        }
         return false;
     }
 

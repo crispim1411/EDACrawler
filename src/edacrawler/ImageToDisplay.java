@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -50,7 +52,7 @@ public class ImageToDisplay extends JPanel {
 
             }
         } catch (Exception e) {
-            System.out.println("Exception: "+e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
@@ -79,10 +81,10 @@ public class ImageToDisplay extends JPanel {
             
             return img;
         }catch (MalformedURLException e) {
-            System.out.println("Error url: "+url);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
             return null;
         } catch (Exception e){
-            System.out.println("Exception addToPanel: "+e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
             return null;
         }
         
@@ -113,7 +115,7 @@ public class ImageToDisplay extends JPanel {
             }
             
         } catch (Exception e){
-            System.out.println("Exception: "+e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
@@ -146,13 +148,14 @@ public class ImageToDisplay extends JPanel {
             frm.setVisible(true);
             
         } catch (Exception e){
-            System.out.println("Exception displayImagesByFiles: "+e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
     public static void imagesToSave(Payload pl, File dir){
         try{
-        for(ArrayList<ArrayList<String>> array : pl.structureImgs){
+            int i = 1;
+            for(ArrayList<ArrayList<String>> array : pl.structureImgs){
                 for(ArrayList<String> arrImage : array){
                     //abre a janela para podermos guardar uma imagem
                     //int returnValue = saveFileChooser.showSaveDialog(this);
@@ -165,15 +168,15 @@ public class ImageToDisplay extends JPanel {
                         image_url = new URL (arrImage.get(0)); 
                         //converte o URL em imagem
                         BufferedImage img = ImageIO.read(image_url);
-                        
+
                         //ImageIO.write((RenderedImage) img, "png", saveFileChooser.getSelectedFile());
-                        
+
                         //escreve as imagens 
                         //Salva as imagens automaticamente usando texto Alt como nome do arquivo
                         String imageName;
-                        if (arrImage.get(1) == "ZZ") imageName = "untitled";
+                        if ("ZZ".equals(arrImage.get(1)))imageName = "untitled".concat(Integer.toString(i++));
                         else imageName = removeDiacriticalMarks(arrImage.get(1).replace(" ", "_").replace("/","_").concat(".png"));
-                        
+
                         String imagePath = dir.getAbsolutePath().concat("/").concat(imageName);
                         ImageIO.write(img, "png", new File(imagePath));
                     }  
@@ -182,7 +185,7 @@ public class ImageToDisplay extends JPanel {
                 }
             }
         } catch (Exception e){
-            System.out.println("Exception imagesToSave: "+e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
