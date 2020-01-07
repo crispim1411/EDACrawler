@@ -158,7 +158,7 @@ public class EDACrawler {
                 }
                 //System.out.println("\nsem mais iteraveis\n\n");
             }
-
+            pl.insertionSort();
             return pl;
             
         } catch (IOException e) {

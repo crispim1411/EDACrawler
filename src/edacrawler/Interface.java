@@ -8,7 +8,9 @@ package edacrawler;
 
 import static edacrawler.EDACrawler.removeDiacriticalMarks;
 import static edacrawler.Payload.printStructure;
-import static edacrawler.ImageDisplay.displayImages;
+import static edacrawler.ImageToDisplay.displayImages;
+import static edacrawler.ImageToDisplay.displayImagesByFiles;
+import static edacrawler.ImageToDisplay.imagesToSave;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.PopupMenu;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -41,25 +44,14 @@ public class Interface extends javax.swing.JFrame {
     private final JFileChooser saveFileChooser;
     private File dir;
     private String absPath;
-    private RenderedImage img;
+    //private RenderedImage img;
     
     
     /** Creates new form Interface */
     public Interface() {
         initComponents();
         
-        //cria uma nova directoria chamda edaTPimgs
-        String OS = System.getProperty("os.name").toString();
-        //File dir;
-        if (OS.compareTo("Windows")==0) {absPath = "c:\\"; System.out.println("SO: Windows");}
-        else if (OS.compareTo("Linux")==0) {absPath = "/home/crispim/Documents/"; System.out.println("SO: Linux");}
-        else {absPath = "c:\\"; System.out.println("SO: Não reconhecido");}
-        
-        //File dir = new File("c:\\edaTPimgs");
-        //File dir = new File("/home/crispim/Documents/edaTPimgs");
-        dir = new File(absPath.concat("edaTPimgs"));
-        dir.mkdir();
-        System.out.println("Pasta edaTPimgs criada em: "+absPath);
+        createDir();
         
         //aponta o open e o savefilechooser para o dir e filtra a extensão de nome de ficheiro para ficheiros png
         openFileChooser = new JFileChooser();
@@ -68,7 +60,10 @@ public class Interface extends javax.swing.JFrame {
         saveFileChooser = new JFileChooser();
         saveFileChooser.setCurrentDirectory(dir);
         saveFileChooser.setFileFilter(new FileNameExtensionFilter("Imagens (.png)", "png"));
+
     }
+    
+    
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -219,9 +214,9 @@ public class Interface extends javax.swing.JFrame {
             //Payload pl = eda.process(url, url, ifDomain); //links da url 
             Payload pl = eda.recursiveSearch(url, ifDomain); //pesquisa recursiva 
             //printa os niveis de pesquisa para links e imagens obtidos
-            printStructure(pl);
+            //printStructure(pl);
             //ordena as imagens de cada level pelo texto alt
-            pl.insertionSort();
+            //pl.insertionSort();
             //mostra imagens num painel unico
             displayImages(pl);
             
@@ -229,35 +224,24 @@ public class Interface extends javax.swing.JFrame {
             System.out.println("Fim");
             
         } catch (Exception e) {
-            System.out.println("Exception interface: " + e);
+            System.out.println("Exception: " + e);
         }
           
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        //abre a janela para podermos escolher uma imagem
-        int returnValue = openFileChooser.showOpenDialog(this);
-        //condição para ver se o JFileChooser aprova o returnValue
-        if(returnValue == JFileChooser.APPROVE_OPTION){
-            try {
-                //lê a imagem do ficheiro escolhido
-                File getFileImg = openFileChooser.getSelectedFile();
-                String imgTitle = getFileImg.getName();
-                img = ImageIO.read(getFileImg);
-                //setup para mostrar a imagem escolhida
-                JFrame frm = new JFrame();
-                JLabel lbl = new JLabel(imgTitle);
-                lbl.setIcon (new ImageIcon((Image) img));
-                lbl.setHorizontalTextPosition(JLabel.CENTER);
-                lbl.setVerticalTextPosition(JLabel.BOTTOM);
-                frm.getContentPane().add(lbl);
-                frm.pack();
-                frm.setVisible(true);
-            } catch (IOException ex) {
-                Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } 
+        try{
+            JFileChooser chooser = new JFileChooser();
+            chooser.setMultiSelectionEnabled(true);
+            
+            int returnValue = chooser.showOpenDialog(this); //abre a janela para podermos escolher uma imagem
+            if(returnValue == JFileChooser.APPROVE_OPTION){ //condição para ver se o JFileChooser aprova o returnValue
+                File [] files = chooser.getSelectedFiles();
+                displayImagesByFiles(files);
+            } 
+        } catch (Exception e){
+            System.out.println("Exception: "+e);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -271,38 +255,18 @@ public class Interface extends javax.swing.JFrame {
             //instancia de crawler com tema de pesquisa e profundidade
             EDACrawler eda = new EDACrawler(searchKey, depth);
             Payload pl = eda.recursiveSearch(url, ifDomain);
+            
             displayImages(pl);
             
-            for(ArrayList<ArrayList<String>> array : pl.structureImgs){
-                for(ArrayList<String> arrImage : array){
-                    //abre a janela para podermos guardar uma imagem
-                    //int returnValue = saveFileChooser.showSaveDialog(this);
-                    //condição para ver se o JFileChooser aprova o returnValue
-                    //if(returnValue == JFileChooser.APPROVE_OPTION){
-                    if(true){
-                        //System.out.println("return value: "+returnValue);
-                        URL image_url = null;
-                        //vai buscar o URL das imagens contidas no payload pl
-                        image_url = new URL (arrImage.get(0)); 
-                        //converte o URL em imagem
-                        img = ImageIO.read(image_url);
-                        
-                        //ImageIO.write((RenderedImage) img, "png", saveFileChooser.getSelectedFile());
-                        
-                        //escreve as imagens 
-                        //Salva as imagens automaticamente usando texto Alt como nome do arquivo
-                        String imageName = removeDiacriticalMarks(arrImage.get(1).replace(" ", "_").concat(".png"));
-                        String imagePath = dir.getAbsolutePath().concat("/").concat(imageName);
-                        ImageIO.write((RenderedImage) img, "png", new File(imagePath));
-                    }  
-                    //ao clicar em cancel termina o ciclo for
-                    else break;                     
-                }
-            }
+            imagesToSave(pl, dir);
+            
         } catch (IOException ex) { 
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception e) {
-            System.out.println("Pasta existe: "+ dir.exists());
+            if (!dir.exists()){
+                System.out.println("Pasta não existe");
+                createDir();
+            }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
     
@@ -340,6 +304,21 @@ public class Interface extends javax.swing.JFrame {
                 new Interface().setVisible(true);
             }
         });
+    }
+    
+    public final void createDir(){
+        //cria uma nova directoria chamda edaTPimgs
+        String OS = System.getProperty("os.name");
+        //File dir;
+        if (OS.compareTo("Windows")==0) {absPath = "c:\\"; System.out.println("SO: Windows");}
+        else if (OS.compareTo("Linux")==0) {absPath = "/home/crispim/Documents/"; System.out.println("SO: Linux");}
+        else {absPath = "c:\\"; System.out.println("SO: Não reconhecido");}
+        
+        dir = new File(absPath.concat("edaTPimgs"));
+        dir.mkdir();
+        System.out.println("Pasta edaTPimgs criada em: "+absPath);
+        
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

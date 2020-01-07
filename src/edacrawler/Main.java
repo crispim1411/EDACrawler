@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import static edacrawler.ImageDisplay.displayImages;
+import static edacrawler.ImageToDisplay.displayImages;
 import java.util.ArrayList;
 /**
  *
