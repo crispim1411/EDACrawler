@@ -35,34 +35,59 @@ public class ImageToDisplay extends JPanel {
     
     public ImageToDisplay(Payload pl) {
         try {
-            int i=1;
+
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
-                add(new JLabel("LEVEL "+i));
-                add(Box.createVerticalStrut(10));
+                //add(new JLabel("LEVEL "+i));
+                //add(Box.createVerticalStrut(10));
                 for (ArrayList<String> arrImage : array) {
-                    Image image = null;
-                    URL image_url = new URL(arrImage.get(0)); 
-                    image = ImageIO.read(image_url); 
-                    ImageIcon icon = new ImageIcon(image);
-                    String title = arrImage.get(1);
-                    if (title == "ZZ") title = "untitled";
-                    JLabel img = new JLabel(title);
+                    //String url, String title -> JLabel img
                     
-                    img.setIcon(icon);
-                    img.setHorizontalTextPosition(JLabel.CENTER);
-                    img.setVerticalTextPosition(JLabel.BOTTOM);
-                    
+                    JLabel img = addToPanel(arrImage.get(0),null, arrImage.get(1));
                     add(img);
                     add(Box.createVerticalStrut(10));
                 }
-                i++;
-                add(Box.createVerticalStrut(200));
+
             }
         } catch (Exception e) {
             System.out.println("Exception: "+e);
         }
     }
+    
+    private static JLabel addToPanel(String url,File imgFile, String title) {
+       
+        try {
+            Image image = null;
+            
+            
+            if (imgFile != null) {
+                image = ImageIO.read(imgFile); //imagem por arquivo
+            }
+            else if (url != null){
+                URL image_url = new URL(url); //imagem por url
+                image = ImageIO.read(image_url);
+            }
+            else throw new Exception("Image without source");
+            
+            ImageIcon icon = new ImageIcon(image);
+            if ("ZZ".equals(title)) title = "untitled";
+            JLabel img = new JLabel(title);
+
+            img.setIcon(icon);
+            img.setHorizontalTextPosition(JLabel.CENTER);
+            img.setVerticalTextPosition(JLabel.BOTTOM);
+            
+            return img;
+        }catch (MalformedURLException e) {
+            System.out.println("Error url: "+url);
+            return null;
+        } catch (Exception e){
+            System.out.println("Exception addToPanel: "+e);
+            return null;
+        }
+        
+    }
+                    
     
     public static void displayImages(Payload pl) throws IOException {
         try {
@@ -97,18 +122,13 @@ public class ImageToDisplay extends JPanel {
             JFrame frm = new JFrame();
             JPanel panel = new JPanel();
             //lê a imagem do ficheiro escolhido
-
+            panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
             for (File getFileImg : files){
 
                 //File getFileImg = openFileChooser.getSelectedFile();
                 String imgTitle = getFileImg.getName();
-                RenderedImage img = ImageIO.read(getFileImg);
-                //setup para mostrar a imagem escolhida
+                JLabel lbl = addToPanel(null, getFileImg, imgTitle);
                 
-                JLabel lbl = new JLabel(imgTitle);
-                lbl.setIcon (new ImageIcon((Image) img));
-                lbl.setHorizontalTextPosition(JLabel.CENTER);
-                lbl.setVerticalTextPosition(JLabel.BOTTOM);
                 panel.add(lbl);
                 panel.add(Box.createHorizontalStrut(10));
                 //frm.getContentPane().add(lbl);
@@ -116,7 +136,15 @@ public class ImageToDisplay extends JPanel {
             }
             frm.add(panel);
             frm.pack();
+            frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+            
+            //scroll
+            JScrollPane scrPane = new JScrollPane(panel); //Um JPanel com scroll das imagens
+            scrPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            frm.getContentPane().add(scrPane); //adiciona elemento de scroll ao JFrame
             frm.setVisible(true);
+            
         } catch (Exception e){
             System.out.println("Exception displayImagesByFiles: "+e);
         }
