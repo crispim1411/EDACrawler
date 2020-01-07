@@ -5,12 +5,8 @@
  */
 package edacrawler;
 import static edacrawler.EDACrawler.removeDiacriticalMarks;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.ComponentOrientation;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,7 +23,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 
 /**
  *
@@ -40,11 +35,7 @@ public class ImageToDisplay extends JPanel {
 
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
-                //add(new JLabel("LEVEL "+i));
-                //add(Box.createVerticalStrut(10));
                 for (ArrayList<String> arrImage : array) {
-                    //String url, String title -> JLabel img
-                    
                     JLabel img = addToPanel(arrImage.get(0),null, arrImage.get(1));
                     add(img);
                     add(Box.createVerticalStrut(10));
@@ -57,10 +48,8 @@ public class ImageToDisplay extends JPanel {
     }
     
     private static JLabel addToPanel(String url,File imgFile, String title) {
-       
         try {
             Image image = null;
-            
             
             if (imgFile != null) {
                 image = ImageIO.read(imgFile); //imagem por arquivo
@@ -80,6 +69,7 @@ public class ImageToDisplay extends JPanel {
             img.setVerticalTextPosition(JLabel.BOTTOM);
             
             return img;
+            
         }catch (MalformedURLException e) {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
             return null;
@@ -87,7 +77,6 @@ public class ImageToDisplay extends JPanel {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
             return null;
         }
-        
     }
                     
     
@@ -133,8 +122,6 @@ public class ImageToDisplay extends JPanel {
                 
                 panel.add(lbl);
                 panel.add(Box.createHorizontalStrut(10));
-                //frm.getContentPane().add(lbl);
-
             }
             frm.add(panel);
             frm.pack();
@@ -157,31 +144,20 @@ public class ImageToDisplay extends JPanel {
             int i = 1;
             for(ArrayList<ArrayList<String>> array : pl.structureImgs){
                 for(ArrayList<String> arrImage : array){
-                    //abre a janela para podermos guardar uma imagem
-                    //int returnValue = saveFileChooser.showSaveDialog(this);
-                    //condição para ver se o JFileChooser aprova o returnValue
-                    //if(returnValue == JFileChooser.APPROVE_OPTION){
-                    if(true){
-                        //System.out.println("return value: "+returnValue);
-                        URL image_url = null;
-                        //vai buscar o URL das imagens contidas no payload pl
-                        image_url = new URL (arrImage.get(0)); 
-                        //converte o URL em imagem
-                        BufferedImage img = ImageIO.read(image_url);
+                    URL image_url = null;
+                    //vai buscar o URL das imagens contidas no payload pl
+                    image_url = new URL (arrImage.get(0)); 
+                    //converte o URL em imagem
+                    BufferedImage img = ImageIO.read(image_url);
+                    
+                    //escreve as imagens 
+                    //Salva as imagens automaticamente usando texto Alt como nome do arquivo
+                    String imageName;
+                    if ("ZZ".equals(arrImage.get(1)))imageName = "untitled".concat(Integer.toString(i++));
+                    else imageName = removeDiacriticalMarks(arrImage.get(1).replace(" ", "_").replace("/","_").concat(".png"));
 
-                        //ImageIO.write((RenderedImage) img, "png", saveFileChooser.getSelectedFile());
-
-                        //escreve as imagens 
-                        //Salva as imagens automaticamente usando texto Alt como nome do arquivo
-                        String imageName;
-                        if ("ZZ".equals(arrImage.get(1)))imageName = "untitled".concat(Integer.toString(i++));
-                        else imageName = removeDiacriticalMarks(arrImage.get(1).replace(" ", "_").replace("/","_").concat(".png"));
-
-                        String imagePath = dir.getAbsolutePath().concat("/").concat(imageName);
-                        ImageIO.write(img, "png", new File(imagePath));
-                    }  
-                    //ao clicar em cancel termina o ciclo for
-                    else break;                     
+                    String imagePath = dir.getAbsolutePath().concat("/").concat(imageName);
+                    ImageIO.write(img, "png", new File(imagePath));          
                 }
             }
         } catch (Exception e){

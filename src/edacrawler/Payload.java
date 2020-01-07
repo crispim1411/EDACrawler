@@ -49,11 +49,7 @@ public class Payload {
                             aux.add(string);
                         }
                     }
-                    //System.out.println("pllinks: "+pl.structureLinks.get(level));
-                    //printStructure(pl.structureLinks);
                 }
-                //printStructure(pl.structureLinks);
-                //System.out.println("\n");
 
                 for (ArrayList<String> arrImage : pl.imgs) {//pl links é adicionado a structureLinks
                     if (containsImg(arrImage) == false) {
@@ -73,11 +69,7 @@ public class Payload {
                             aux.add(arrImage);
                         }
                     }
-                    //System.out.println("plimgs: "+pl.structureImgs.get(level));
-                    //printStructure(pl.structureImgs);
                 }
-                //printStructure(pl.structureImgs);
-                //System.out.println("\n");
             }
         } catch (Exception e) {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
@@ -130,23 +122,5 @@ public class Payload {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
         return false;
-    }
-    
-//    public static void printStructure(Payload pl) {
-//        if (pl != null) {
-//            int i = 0;
-//            for (ArrayList<String> array : pl.structureLinks) {
-//                System.out.println(""+array.size()+" itens");
-//                System.out.println("level "+(i+1)+": "+array);
-//                i++;
-//            }
-//            i = 0;
-//            for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
-//                System.out.println(""+array.size()+" itens");
-//                System.out.println("level "+(i+1)+": "+array);
-//                i++;
-//            }
-//        }
-//    }
-    
+    }   
 }

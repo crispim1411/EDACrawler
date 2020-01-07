@@ -6,31 +6,14 @@
 
 package edacrawler;
 
-import static edacrawler.EDACrawler.removeDiacriticalMarks;
 import static edacrawler.ImageToDisplay.displayImages;
 import static edacrawler.ImageToDisplay.displayImagesByFiles;
 import static edacrawler.ImageToDisplay.imagesToSave;
-import java.awt.Component;
-import java.awt.Image;
-import java.awt.PopupMenu;
-import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -43,7 +26,6 @@ public class Interface extends javax.swing.JFrame {
     private final JFileChooser saveFileChooser;
     private File dir;
     private String absPath;
-    //private RenderedImage img;
     
     
     /** Creates new form Interface */
@@ -208,18 +190,13 @@ public class Interface extends javax.swing.JFrame {
             boolean ifDomain = boolDomain.isEnabled();
                 
             //instancia de crawler com tema de pesquisa e profundidade
-            EDACrawler eda = new EDACrawler(searchKey, depth); 
-            //Payload pl = eda.process(url, url, ifDomain); //links da url 
-            Payload pl = eda.recursiveSearch(url, ifDomain); //pesquisa recursiva 
-            //printa os niveis de pesquisa para links e imagens obtidos
-            //printStructure(pl);
-            //ordena as imagens de cada level pelo texto alt
-            //pl.insertionSort();
+            EDACrawler eda = new EDACrawler(searchKey, depth);
+            //pesquisa recursiva 
+            Payload pl = eda.recursiveSearch(url, ifDomain); 
             //mostra imagens num painel unico
             displayImages(pl);
             
             Logger.getLogger(Interface.class.getName()).log(Level.INFO, null,"Fim");
-            
         } catch (Exception e) {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -231,8 +208,10 @@ public class Interface extends javax.swing.JFrame {
             JFileChooser chooser = new JFileChooser();
             chooser.setMultiSelectionEnabled(true);
             
-            int returnValue = chooser.showOpenDialog(this); //abre a janela para podermos escolher uma imagem
-            if(returnValue == JFileChooser.APPROVE_OPTION){ //condição para ver se o JFileChooser aprova o returnValue
+            //abre a janela para podermos escolher uma imagem
+            int returnValue = chooser.showOpenDialog(this); 
+            //condição para ver se o JFileChooser aprova o returnValue
+            if(returnValue == JFileChooser.APPROVE_OPTION){ 
                 File [] files = chooser.getSelectedFiles();
                 displayImagesByFiles(files);
             } 
@@ -243,7 +222,6 @@ public class Interface extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
-            // TODO add your handling code here:
             String url = textURL.getText();
             String searchKey = txtSearch.getText();
             int depth = Integer.parseInt(txtDepth.getText());
@@ -252,18 +230,16 @@ public class Interface extends javax.swing.JFrame {
             //instancia de crawler com tema de pesquisa e profundidade
             EDACrawler eda = new EDACrawler(searchKey, depth);
             Payload pl = eda.recursiveSearch(url, ifDomain);
-            
             displayImages(pl);
-            
+            if (!dir.exists()){
+                createDir();
+            }
             imagesToSave(pl, dir);
             
         } catch (IOException ex) { 
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception e) {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-            if (!dir.exists()){
-                createDir();
-            }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
     

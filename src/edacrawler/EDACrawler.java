@@ -17,7 +17,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import static sun.jvm.hotspot.HelloWorld.e;
 
 /**
  *
@@ -46,15 +45,14 @@ public class EDACrawler {
 
     public Payload process(String url, String domain, boolean ifDomain) throws IOException {
         //retorna as imagens e links de um link dado por parâmetro
-        //caso setado retorna os links que fazem parte do dominio
+        //caso setado entra apenas nos links que fazem parte do dominio
         try {
             Payload payload = new Payload();
 
             if (!url.endsWith("/")) {
                 url += "/";
             }
-
-            //Document doc = Jsoup.connect(url).timeout(10000).ignoreContentType(true).get();
+            
             //Conexão
             Connection con = Jsoup.connect(url).ignoreContentType(true).timeout(10000);
             Connection.Response resp = con.execute();
@@ -135,30 +133,20 @@ public class EDACrawler {
             }
 
             //se pl possui size >= level possui iteraveis, se level limite ainda não alcançado
-            if (pl.structureLinks.size() >= level && level < this.limitLevel) { 
-            //if (level < this.limitLevel) {
-
+            if (pl.structureLinks.size() >= level && level < this.limitLevel) {
                 String nextUrl;
                 Iterator<String> aux = pl.structureLinks.get(level-1).iterator(); //links do level iteravel
-                //System.out.println("level: "+level+": estrutura obtida: "+pl.structureLinks.get(level));
                 
                 while (aux.hasNext()) { //se há links a iterar
                     nextUrl = aux.next(); //pega o proximo
-                    //System.out.println(nextUrl);
-                    //System.out.println("analisando: "+nextUrl);
                     if (visited(pl.structureLinks, nextUrl, level) == false) { //se o link não foi visitado
-                        //System.out.println("visitando: "+nextUrl);
                         Payload tmp = this.process(nextUrl, domain, ifDomain); //obtem payload
-                        //System.out.println("level "+(level+1)+ " pl obtido: "+tmp.links);
                         if (tmp != null){                        
                             pl.addToStructure(tmp, level+1);
-                            //System.out.println("structure updated: "+pl.structureLinks);
                             recursiveSearch(pl, nextUrl, domain,ifDomain, level+1); //entra no proximo nivel
                         }
                     }
-                    //else { System.out.println("\nja visitado: "+nextUrl);}
                 }
-                //System.out.println("\nsem mais iteraveis\n\n");
             }
             pl.insertionSort();
             return pl;
@@ -174,13 +162,10 @@ public class EDACrawler {
     }
     
     public boolean visited(ArrayList<ArrayList<String>> structure, String url, int level){
-        //System.out.println("level: "+level+", size: "+structure.size());
         try{
             level--;
             for (int i=0; i<structure.size(); i++){
-                //System.out.println("verificando se "+url+" lvl"+level+" existe no get "+i);
                 if (structure.get(i).contains(url) && i!=level) {
-                    //System.out.println("existe no lvl"+(i+1) +"get "+i);
                     return true;
                 }
             } 
