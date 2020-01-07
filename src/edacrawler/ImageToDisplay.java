@@ -154,7 +154,7 @@ public class ImageToDisplay extends JPanel {
                     //Salva as imagens automaticamente usando texto Alt como nome do arquivo
                     String imageName;
                     if ("ZZ".equals(arrImage.get(1)))imageName = "untitled".concat(Integer.toString(i++));
-                    else imageName = removeDiacriticalMarks(arrImage.get(1).replace(" ", "_").replace("/","_").concat(".png"));
+                    else imageName = removeDiacriticalMarks(arrImage.get(1).replace(" ", "_").replace("/","_").replace(",","_").replace(".","_").replace(":","_").replace(";","_").replace("__","_").concat(".png"));
 
                     String imagePath = dir.getAbsolutePath().concat("/").concat(imageName);
                     ImageIO.write(img, "png", new File(imagePath));          
