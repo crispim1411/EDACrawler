@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import static edacrawler.ImageCrawler.displayImages;
+import static edacrawler.ImageDisplay.displayImages;
 import java.util.ArrayList;
 /**
  *
@@ -28,64 +28,6 @@ public class Main {
         EDACrawler eda = new EDACrawler(searchKey, 1); //instancia de crawler
         Payload pl = eda.recursiveSearch("http://portal2.ipt.pt/", true); //links da url
 
-        //System.out.println(pl.links);   //mostra os links contidos na página inicial do ipt
-        //System.out.println(pl.imgs);    //mostra as imagens todas da página inicial do ipt
-
-        //Payload pl = eda.recursiveSearch(url);
-        //System.out.println("pl: "+pl.links);
-
-        for (ArrayList<String> string : pl.imgs) {
-            displayImages(pl);      
-        }
-
-        //html bruto se quisermos fazer algo com ele nomeadamente pesquisar imagens por um texto
-        //System.out.println(pl.html);
-
-        //agora aqui começavam a mapear para a estruturas de dados deles, indexar, etc
-        //utilizavam a estrutura de dados para ver se já visitaram ou não e visitivam só o que ainda não foi visitado
-        //exemplo a visitar apenas os filhos da semente...
-//        int count = 0;
-//        for (String string : pl.links) {
-//            try {
-//                Payload pla = eda.process(string);
-//                System.out.println(pla.links);
-//                
-//                //isto depois tem que ser recursivo
-//                //retirar contador
-//                if (count > 5) {
-//                    break;  
-//                }
-//                else count++;
-//                
-//            } catch (Exception e) {
-//                System.out.println(string + " invalid");
-//            }
-//            
-//        }
-          
-//        for (String string : pl.imgs) {
-//            display_image(string);
-//        }      
-         
+        displayImages(pl);     
     }
-    
-//    private static void display_image(String url) throws MalformedURLException, IOException {
-//        try {
-//            Image image = null;
-//            URL image_url = new URL(url);
-//            image = ImageIO.read(image_url);
-//
-//            JFrame frm = new JFrame();
-//            frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//            JLabel img = new JLabel();
-//            ImageIcon icon = new ImageIcon(image);
-//            img.setIcon(icon);
-//            frm.getContentPane().add(img);
-//            frm.setSize(200, 200);
-//            frm.setVisible(true);
-//        } catch (HeadlessException | IOException e) {
-//            System.out.println(url + " invalid");
-//        }
-//    }
-
 }

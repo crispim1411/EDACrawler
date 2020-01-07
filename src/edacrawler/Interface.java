@@ -6,8 +6,9 @@
 
 package edacrawler;
 
+import static edacrawler.EDACrawler.removeDiacriticalMarks;
 import static edacrawler.Payload.printStructure;
-import static edacrawler.ImageCrawler.displayImages;
+import static edacrawler.ImageDisplay.displayImages;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.PopupMenu;
@@ -38,7 +39,8 @@ public class Interface extends javax.swing.JFrame {
     
     private final JFileChooser openFileChooser;
     private final JFileChooser saveFileChooser;
-    
+    private File dir;
+    private String absPath;
     private RenderedImage img;
     
     
@@ -47,8 +49,17 @@ public class Interface extends javax.swing.JFrame {
         initComponents();
         
         //cria uma nova directoria chamda edaTPimgs
-        File dir = new File("c:\\edaTPimgs");
+        String OS = System.getProperty("os.name").toString();
+        //File dir;
+        if (OS.compareTo("Windows")==0) {absPath = "c:\\"; System.out.println("SO: Windows");}
+        else if (OS.compareTo("Linux")==0) {absPath = "/home/crispim/Documents/"; System.out.println("SO: Linux");}
+        else {absPath = "c:\\"; System.out.println("SO: Não reconhecido");}
+        
+        //File dir = new File("c:\\edaTPimgs");
+        //File dir = new File("/home/crispim/Documents/edaTPimgs");
+        dir = new File(absPath.concat("edaTPimgs"));
         dir.mkdir();
+        System.out.println("Pasta edaTPimgs criada em: "+absPath);
         
         //aponta o open e o savefilechooser para o dir e filtra a extensão de nome de ficheiro para ficheiros png
         openFileChooser = new JFileChooser();
@@ -218,7 +229,7 @@ public class Interface extends javax.swing.JFrame {
             System.out.println("Fim");
             
         } catch (Exception e) {
-            System.out.println("Exception is: " + e);
+            System.out.println("Exception interface: " + e);
         }
           
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -258,26 +269,36 @@ public class Interface extends javax.swing.JFrame {
             Payload pl = eda.recursiveSearch(url, ifDomain);
             displayImages(pl);
             
-                for(ArrayList<ArrayList<String>> array : pl.structureImgs){
-                    for(ArrayList<String> arrImage : array){
-                        //abre a janela para podermos guardar uma imagem
-                        int returnValue = saveFileChooser.showSaveDialog(this);
-                        //condição para ver se o JFileChooser aprova o returnValue
-                        if(returnValue == JFileChooser.APPROVE_OPTION){
+            for(ArrayList<ArrayList<String>> array : pl.structureImgs){
+                for(ArrayList<String> arrImage : array){
+                    //abre a janela para podermos guardar uma imagem
+                    //int returnValue = saveFileChooser.showSaveDialog(this);
+                    //condição para ver se o JFileChooser aprova o returnValue
+                    //if(returnValue == JFileChooser.APPROVE_OPTION){
+                    if(true){
+                        //System.out.println("return value: "+returnValue);
                         URL image_url = null;
                         //vai buscar o URL das imagens contidas no payload pl
                         image_url = new URL (arrImage.get(0)); 
                         //converte o URL em imagem
                         img = ImageIO.read(image_url);
+                        
+                        //ImageIO.write((RenderedImage) img, "png", saveFileChooser.getSelectedFile());
+                        
                         //escreve as imagens 
-                        ImageIO.write((RenderedImage) img, "png", saveFileChooser.getSelectedFile());
+                        //Salva as imagens automaticamente usando texto Alt como nome do arquivo
+                        String imageName = removeDiacriticalMarks(arrImage.get(1).replace(" ", "_").concat(".png"));
+                        String imagePath = dir.getAbsolutePath().concat("/").concat(imageName);
+                        ImageIO.write((RenderedImage) img, "png", new File(imagePath));
                     }  
-                        //ao clicar em cancel termina o ciclo for
-                        else break;                     
+                    //ao clicar em cancel termina o ciclo for
+                    else break;                     
                 }
             }
         } catch (IOException ex) { 
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+            System.out.println("Pasta existe: "+ dir.exists());
         }
     }//GEN-LAST:event_jButton3ActionPerformed
     
