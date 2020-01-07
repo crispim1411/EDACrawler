@@ -7,17 +7,56 @@
 package edacrawler;
 
 import static edacrawler.Payload.printStructure;
-import static edacrawler.ImageDisplay.displayImages;
+import static edacrawler.ImageCrawler.displayImages;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.PopupMenu;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
  * @author PedroMatias & RodrigoCrispim
  */
 public class Interface extends javax.swing.JFrame {
-
+    
+    private final JFileChooser openFileChooser;
+    private final JFileChooser saveFileChooser;
+    
+    private RenderedImage img;
+    
+    
     /** Creates new form Interface */
     public Interface() {
         initComponents();
+        
+        //cria uma nova directoria chamda edaTPimgs
+        File dir = new File("c:\\edaTPimgs");
+        dir.mkdir();
+        
+        //aponta o open e o savefilechooser para o dir e filtra a extensão de nome de ficheiro para ficheiros png
+        openFileChooser = new JFileChooser();
+        openFileChooser.setCurrentDirectory(dir);
+        openFileChooser.setFileFilter(new FileNameExtensionFilter("Imagens (.png)", "png"));
+        saveFileChooser = new JFileChooser();
+        saveFileChooser.setCurrentDirectory(dir);
+        saveFileChooser.setFileFilter(new FileNameExtensionFilter("Imagens (.png)", "png"));
     }
 
     /** This method is called from within the constructor to
@@ -38,6 +77,9 @@ public class Interface extends javax.swing.JFrame {
         txtDepth = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         boolDomain = new javax.swing.JToggleButton();
+        jButton2 = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -64,6 +106,22 @@ public class Interface extends javax.swing.JFrame {
 
         boolDomain.setText("Apenas links do mesmo dominio");
 
+        jButton2.setText("Procurar imagem...");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        jButton3.setText("Buscar e guardar...");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -76,14 +134,26 @@ public class Interface extends javax.swing.JFrame {
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(textURL, javax.swing.GroupLayout.PREFERRED_SIZE, 583, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtDepth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel3)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(txtDepth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addGap(131, 131, 131)
+                                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(59, 59, 59)
+                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(boolDomain)
                         .addGap(40, 40, 40)
@@ -99,11 +169,20 @@ public class Interface extends javax.swing.JFrame {
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(41, 41, 41)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txtDepth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(33, 33, 33)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton2)
+                                .addComponent(jButton3)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -141,7 +220,66 @@ public class Interface extends javax.swing.JFrame {
         } catch (Exception e) {
             System.out.println("Exception is: " + e);
         }
+          
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        //abre a janela para podermos escolher uma imagem
+        int returnValue = openFileChooser.showOpenDialog(this);
+        //condição para ver se o JFileChooser aprova o returnValue
+        if(returnValue == JFileChooser.APPROVE_OPTION){
+            try {
+                //lê a imagem do ficheiro escolhido
+               img = ImageIO.read(openFileChooser.getSelectedFile());
+               //setup para mostrar a imagem escolhida
+               JFrame frm = new JFrame();
+               JLabel lbl = new JLabel();
+               lbl.setIcon (new ImageIcon((Image) img));
+               frm.getContentPane().add(lbl);
+               frm.pack();
+               frm.setVisible(true);
+            } catch (IOException ex) {
+                Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } 
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        try {
+            // TODO add your handling code here:
+            String url = textURL.getText();
+            String searchKey = txtSearch.getText();
+            int depth = Integer.parseInt(txtDepth.getText());
+            boolean ifDomain = boolDomain.isEnabled();
+                
+            //instancia de crawler com tema de pesquisa e profundidade
+            EDACrawler eda = new EDACrawler(searchKey, depth);
+            Payload pl = eda.recursiveSearch(url, ifDomain);
+            displayImages(pl);
+            
+                for(ArrayList<ArrayList<String>> array : pl.structureImgs){
+                    for(ArrayList<String> arrImage : array){
+                        //abre a janela para podermos guardar uma imagem
+                        int returnValue = saveFileChooser.showSaveDialog(this);
+                        //condição para ver se o JFileChooser aprova o returnValue
+                        if(returnValue == JFileChooser.APPROVE_OPTION){
+                        URL image_url = null;
+                        //vai buscar o URL das imagens contidas no payload pl
+                        image_url = new URL (arrImage.get(0)); 
+                        //converte o URL em imagem
+                        img = ImageIO.read(image_url);
+                        //escreve as imagens 
+                        ImageIO.write((RenderedImage) img, "png", saveFileChooser.getSelectedFile());
+                    }  
+                        //ao clicar em cancel termina o ciclo for
+                        else break;                     
+                }
+            }
+        } catch (IOException ex) { 
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
     
     /**
      * @param args the command line arguments
@@ -172,6 +310,7 @@ public class Interface extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new Interface().setVisible(true);
             }
@@ -181,9 +320,12 @@ public class Interface extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton boolDomain;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField textURL;
     private javax.swing.JTextField txtDepth;
