@@ -192,7 +192,6 @@ public class Interface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
             Logger.getLogger(Interface.class.getName()).log(Level.INFO,"Iniciando");
             
             // Obtenção dos dados da interface

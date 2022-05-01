@@ -37,8 +37,10 @@ public class ImageToDisplay extends JPanel {
             for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
                 for (ArrayList<String> arrImage : array) {
                     JLabel img = addToPanel(arrImage.get(0),null, arrImage.get(1));
-                    add(img);
-                    add(Box.createVerticalStrut(10));
+                    if (img != null) {
+                        add(img);
+                        add(Box.createVerticalStrut(10));
+                    }
                 }
 
             }
@@ -47,65 +49,53 @@ public class ImageToDisplay extends JPanel {
         }
     }
     
-    private static JLabel addToPanel(String url,File imgFile, String title) {
-        try {
-            Image image = null;
-            
-            if (imgFile != null) {
-                image = ImageIO.read(imgFile); //imagem por arquivo
-            }
-            else if (url != null){
-                URL image_url = new URL(url); //imagem por url
-                image = ImageIO.read(image_url);
-            }
-            else throw new Exception("Image without source");
-            
-            ImageIcon icon = new ImageIcon(image);
+    private static JLabel addToPanel(String url,File imgFile, String title) throws MalformedURLException, IOException {
+        Image image = null;
+
+        if (imgFile != null) {
+            image = ImageIO.read(imgFile); //imagem por arquivo
+        }
+        else if (url != null){
+            URL image_url = new URL(url); //imagem por url
+            image = ImageIO.read(image_url);
+        }
+
+        if (image != null) {
+            //throw new Exception("Image without source");
             if ("ZZ".equals(title)) title = "untitled";
             JLabel img = new JLabel(title);
-
+            
+            ImageIcon icon = new ImageIcon(image);
             img.setIcon(icon);
             img.setHorizontalTextPosition(JLabel.CENTER);
             img.setVerticalTextPosition(JLabel.BOTTOM);
-            
             return img;
-            
-        }catch (MalformedURLException e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-            return null;
-        } catch (Exception e){
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-            return null;
         }
+        return null;
     }
                     
     
-    public static void displayImages(Payload pl) throws IOException {
-        try {
-            if (pl.structureImgs.isEmpty() == false) {
-   
-                //Panel e Frame
-                ImageToDisplay imgsJPanel = new ImageToDisplay(pl); //imagens adicionadas em JPanel
-                JFrame frm = new JFrame();
-                //imagens
-                frm.add(imgsJPanel); //adiciona JPanel ao JFrame
-                frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-                frm.pack(); //tamanho do JFrame de acordo com o tamanho das imagens 
+    public static void displayImages(Payload pl) {
+        if (pl.structureImgs.isEmpty() == false) {
 
-                //scroll
-                JScrollPane scrPane = new JScrollPane(imgsJPanel); //Um JPanel com scroll das imagens
-                scrPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-                scrPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                frm.getContentPane().add(scrPane); //adiciona elemento de scroll ao JFrame
-                frm.setVisible(true);
-            }
-            else {
-                JOptionPane.showMessageDialog(null, "Nenhuma imagem com este tema encontrada","Sem resultados", JOptionPane.ERROR_MESSAGE);
-            }
-            
-        } catch (Exception e){
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
+            //Panel e Frame
+            ImageToDisplay imgsJPanel = new ImageToDisplay(pl); //imagens adicionadas em JPanel
+            JFrame frm = new JFrame();
+            //imagens
+            frm.add(imgsJPanel); //adiciona JPanel ao JFrame
+            frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+            frm.pack(); //tamanho do JFrame de acordo com o tamanho das imagens 
+
+            //scroll
+            JScrollPane scrPane = new JScrollPane(imgsJPanel); //Um JPanel com scroll das imagens
+            scrPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            frm.getContentPane().add(scrPane); //adiciona elemento de scroll ao JFrame
+            frm.setVisible(true);
         }
+        else {
+            JOptionPane.showMessageDialog(null, "Nenhuma imagem com este tema encontrada","Sem resultados", JOptionPane.ERROR_MESSAGE);
+        } 
     }
     
     public static void displayImagesByFiles(File[] files){

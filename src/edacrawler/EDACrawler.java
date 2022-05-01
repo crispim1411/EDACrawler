@@ -37,84 +37,71 @@ public class EDACrawler {
     }
     
     public static String removeDiacriticalMarks(String string) {
-        try{
-            return Normalizer.normalize(string, Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-        } catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-            return null;
-        }
+        return Normalizer.normalize(string, Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 
     public Payload process(String url, String domain, boolean ifDomain) throws IOException {
         //retorna as imagens e links de um link dado por parâmetro
         //caso setado entra apenas nos links que fazem parte do dominio
-        try {
-            Payload payload = new Payload();
+        Payload payload = new Payload();
 
-            if (!url.endsWith("/")) {
-                url += "/";
-            }
-            
-            //Conexão
-            Connection con = Jsoup.connect(url).ignoreContentType(true).timeout(10000);
-            Connection.Response resp = con.execute();
-            Document doc = null;
-            
-            if (resp.statusCode() == 200) {
-                doc = con.get();
-                Elements links = doc.select("a");
-                Iterator<Element> aux = links.iterator();
-
-                while (aux.hasNext()) {
-                    String href = aux.next().attr("abs:href");
-                    if (href.length() > 1) {
-                        if (ifDomain) { //se flag de dominio so adiciona se for do mesmo dominio
-                            if (href.contains(domain)) {
-                                payload.links.add(href);  
-                            }
-                        }
-                        else {
-                            payload.links.add(href);
-                        }
-                    }
-                }
-
-                Elements imgs = doc.select("img");
-                aux = imgs.iterator();
-                Element tmp;
-                while (aux.hasNext()) {
-                    tmp = aux.next();
-                    String src = tmp.attr("abs:src");
-                    String alt_text = tmp.attr("alt");
-                    if (src.length() > 1) {
-                        if (searchKey==null || removeDiacriticalMarks(alt_text).toLowerCase().contains(searchKey)) {
-                            ArrayList<String> arrImage = new ArrayList<>();
-                            arrImage.add(src);
-
-                            if (alt_text != "" && alt_text.length()>1) alt_text = alt_text.substring(0, 1).toUpperCase() + alt_text.substring(1);
-                            else if (alt_text.length() == 1) alt_text = alt_text.toUpperCase();
-                            else alt_text = "ZZ"; //forçar ir pro fim da lista
-
-                            arrImage.add(alt_text);
-                            payload.imgs.add(arrImage); //cada imagem é um array [url, alt]
-                        }
-                    }
-                }
-            }
-            else {
-                Logger.getLogger(Interface.class.getName()).log(Level.WARNING, null, resp.statusCode());
-            }
-            payload.html = doc.html();
-
-            return payload;
-            
-        } catch (IOException e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-          return null;
-        } catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-          return null;
+        if (!url.endsWith("/")) {
+            url += "/";
         }
+        
+        //Conexão
+        Connection con = Jsoup.connect(url).ignoreContentType(true).timeout(10000);
+        Connection.Response resp = con.execute();
+        Document doc = null;
+
+        if (resp.statusCode() == 200) {
+            doc = con.get();
+            Elements links = doc.select("a");
+            Iterator<Element> aux = links.iterator();
+
+            while (aux.hasNext()) {
+                String href = aux.next().attr("abs:href");
+                if (href.length() > 1) {
+                    if (ifDomain) { //se flag de dominio so adiciona se for do mesmo dominio
+                        if (href.contains(domain)) {
+                            payload.links.add(href);  
+                        }
+                    }
+                    else {
+                        payload.links.add(href);
+                    }
+                }
+            }
+
+            Elements imgs = doc.select("img");
+            aux = imgs.iterator();
+            Element tmp;
+            while (aux.hasNext()) {
+                tmp = aux.next();
+                String src = tmp.attr("abs:src");
+                String alt_text = tmp.attr("alt");
+                if (src.length() > 1) {
+                    if (searchKey==null || removeDiacriticalMarks(alt_text).toLowerCase().contains(searchKey)) {
+                        ArrayList<String> arrImage = new ArrayList<>();
+                        arrImage.add(src);
+
+                        if (alt_text != "" && alt_text.length()>1) alt_text = alt_text.substring(0, 1).toUpperCase() + alt_text.substring(1);
+                        else if (alt_text.length() == 1) alt_text = alt_text.toUpperCase();
+                        else alt_text = "ZZ"; //forçar ir pro fim da lista
+
+                        arrImage.add(alt_text);
+                        payload.imgs.add(arrImage); //cada imagem é um array [url, alt]
+                    }
+                }
+            }
+        }
+        else {
+            Logger.getLogger(Interface.class.getName()).log(Level.WARNING, null, resp.statusCode());
+        }
+        payload.html = doc.html();
+
+        return payload;
     }
     
     public Payload recursiveSearch(boolean ifDomain) {
@@ -129,56 +116,44 @@ public class EDACrawler {
         catch (IOException e) {
             Logger.getLogger(Interface.class.getName()).log(Level.WARNING, null, e.getMessage());
         }
+        
         return null;
     }
     
-    public Payload recursiveSearch(Payload pl, String url, String domain, boolean ifDomain, int level) throws IOException {
-        try {
-            if (pl == null) { //Payload vazio               
-                pl = this.process(url, domain, ifDomain); //carrega links level 1
-                pl.addToStructure(pl, level); //links do nivel 1          
-            }
+    public Payload recursiveSearch(Payload pl, String url, String domain, boolean ifDomain, int level) throws IOException {           
+        //alterar esse trecho
+        if (pl == null) { //Payload vazio               
+            pl = this.process(url, domain, ifDomain); //carrega links level 1
+            pl.addToStructure(pl, level); //links do nivel 1          
+        }
 
-            //se pl possui size >= level possui iteraveis, se level limite ainda não alcançado
-            if (pl.structureLinks.size() >= level && level < this.limitLevel) {
-                String nextUrl;
-                Iterator<String> aux = pl.structureLinks.get(level-1).iterator(); //links do level iteravel
-                
-                while (aux.hasNext()) { //se há links a iterar
-                    nextUrl = aux.next(); //pega o proximo
-                    if (visited(pl.structureLinks, nextUrl, level) == false) { //se o link não foi visitado
-                        Payload tmp = this.process(nextUrl, domain, ifDomain); //obtem payload
-                        if (tmp != null){                        
-                            pl.addToStructure(tmp, level+1);
-                            recursiveSearch(pl, nextUrl, domain,ifDomain, level+1); //entra no proximo nivel
-                        }
+        //se pl possui size >= level possui iteraveis, se level limite ainda não alcançado
+        if (pl.structureLinks.size() >= level && level < this.limitLevel) {
+            String nextUrl;
+            Iterator<String> aux = pl.structureLinks.get(level-1).iterator(); //links do level iteravel
+
+            while (aux.hasNext()) { //se há links a iterar
+                nextUrl = aux.next(); //pega o proximo
+                if (visited(pl.structureLinks, nextUrl, level) == false) { //se o link não foi visitado
+                    Payload tmp = this.process(nextUrl, domain, ifDomain); //obtem payload
+                    if (tmp != null){                        
+                        pl.addToStructure(tmp, level+1);
+                        recursiveSearch(pl, nextUrl, domain,ifDomain, level+1); //entra no proximo nivel
                     }
                 }
             }
-            pl.insertionSort();
-            return pl;
-            
-        } catch (IOException e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-            return null;
         }
-        catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-          return null;
-        }
+        pl.insertionSort();
+        return pl;
     }
     
     public boolean visited(ArrayList<ArrayList<String>> structure, String url, int level){
-        try{
-            level--;
-            for (int i=0; i<structure.size(); i++){
-                if (structure.get(i).contains(url) && i!=level) {
-                    return true;
-                }
-            } 
-        } catch (Exception e){
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-        }
+        level--;
+        for (int i=0; i<structure.size(); i++){
+            if (structure.get(i).contains(url) && i!=level) {
+                return true;
+            }
+        } 
         return false;
     }
 
