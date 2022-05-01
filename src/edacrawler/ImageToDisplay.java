@@ -36,7 +36,8 @@ public class ImageToDisplay extends JPanel {
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
             for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
                 for (ArrayList<String> arrImage : array) {
-                    JLabel img = addToPanel(arrImage.get(0),null, arrImage.get(1));
+                    Image image = LoadImageFromUrl(arrImage.get(0));
+                    JLabel img = addToPanel(image, arrImage.get(1));
                     if (img != null) {
                         add(img);
                         add(Box.createVerticalStrut(10));
@@ -49,19 +50,17 @@ public class ImageToDisplay extends JPanel {
         }
     }
     
-    private static JLabel addToPanel(String url,File imgFile, String title) throws MalformedURLException, IOException {
-        Image image = null;
-
-        if (imgFile != null) {
-            image = ImageIO.read(imgFile); //imagem por arquivo
-        }
-        else if (url != null){
-            URL image_url = new URL(url); //imagem por url
-            image = ImageIO.read(image_url);
-        }
-
+    private static Image LoadImageFromUrl(String url) throws MalformedURLException, IOException {
+        URL image_url = new URL(url); 
+        return ImageIO.read(image_url);
+    }
+    
+    private static Image LoadImageFromFile(File imgFile) throws IOException {
+        return ImageIO.read(imgFile);
+    }
+    
+    private static JLabel addToPanel(Image image, String title) {
         if (image != null) {
-            //throw new Exception("Image without source");
             if ("ZZ".equals(title)) title = "untitled";
             JLabel img = new JLabel(title);
             
@@ -108,7 +107,8 @@ public class ImageToDisplay extends JPanel {
 
                 //File getFileImg = openFileChooser.getSelectedFile();
                 String imgTitle = getFileImg.getName();
-                JLabel lbl = addToPanel(null, getFileImg, imgTitle);
+                Image image = LoadImageFromFile(getFileImg);
+                JLabel lbl = addToPanel(image, imgTitle);
                 
                 panel.add(lbl);
                 panel.add(Box.createHorizontalStrut(10));
