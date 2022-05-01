@@ -41,9 +41,9 @@ public class EDACrawler {
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 
-    public Payload process(String url, String domain, boolean ifDomain) throws IOException {
-        //retorna as imagens e links de um link dado por parâmetro
-        //caso setado entra apenas nos links que fazem parte do dominio
+    public Payload process(String url, String domain, boolean restrictive) throws IOException {
+        //retorna as imagens e links de um site 
+        //caso restrictive True entra apenas nos links que fazem parte do dominio
         Payload payload = new Payload();
 
         if (!url.endsWith("/")) {
@@ -63,7 +63,7 @@ public class EDACrawler {
             while (aux.hasNext()) {
                 String href = aux.next().attr("abs:href");
                 if (href.length() > 1) {
-                    if (ifDomain) { //se flag de dominio so adiciona se for do mesmo dominio
+                    if (restrictive) { //se flag de dominio so adiciona se for do mesmo dominio
                         if (href.contains(domain)) {
                             payload.links.add(href);  
                         }

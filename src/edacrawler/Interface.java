@@ -63,7 +63,7 @@ public class Interface extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
-        boolDomain = new javax.swing.JCheckBox();
+        restrictive = new javax.swing.JCheckBox();
         txtDepth = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
 
@@ -107,10 +107,10 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
-        boolDomain.setText("Pesquisa no domínio");
-        boolDomain.addActionListener(new java.awt.event.ActionListener() {
+        restrictive.setText("Restrito ao domínio");
+        restrictive.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boolDomainActionPerformed(evt);
+                restrictiveActionPerformed(evt);
             }
         });
 
@@ -154,7 +154,7 @@ public class Interface extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtDepth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(boolDomain))
+                            .addComponent(restrictive))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -178,7 +178,7 @@ public class Interface extends javax.swing.JFrame {
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(boolDomain)
+                                .addComponent(restrictive)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jButton1)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -198,12 +198,11 @@ public class Interface extends javax.swing.JFrame {
             String url = textURL.getText();
             String searchKey = txtSearch.getText();
             int depth = Integer.parseInt(txtDepth.getSelectedItem().toString());
-            boolean ifDomain = boolDomain.isEnabled();
             
             //instancia de crawler com tema de pesquisa e profundidade
             EDACrawler eda = new EDACrawler(url, searchKey, depth);
             //pesquisa recursiva 
-            Payload pl = eda.recursiveSearch(ifDomain); 
+            Payload pl = eda.recursiveSearch(restrictive.isEnabled()); 
             //mostra imagens num painel unico
             displayImages(pl);
             
@@ -231,7 +230,7 @@ public class Interface extends javax.swing.JFrame {
         String url = textURL.getText();
         String searchKey = txtSearch.getText();
         int depth = Integer.parseInt(txtDepth.getSelectedItem().toString());
-        boolean ifDomain = boolDomain.isSelected();
+        boolean ifDomain = restrictive.isSelected();
 
         //instancia de crawler com tema de pesquisa e profundidade
         EDACrawler eda = new EDACrawler(url, searchKey, depth);
@@ -243,9 +242,9 @@ public class Interface extends javax.swing.JFrame {
         imagesToSave(pl, dir);
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void boolDomainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boolDomainActionPerformed
+    private void restrictiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restrictiveActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_boolDomainActionPerformed
+    }//GEN-LAST:event_restrictiveActionPerformed
 
     private void textURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textURLActionPerformed
         // TODO add your handling code here:
@@ -320,7 +319,6 @@ public class Interface extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox boolDomain;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -329,6 +327,7 @@ public class Interface extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JCheckBox restrictive;
     private javax.swing.JTextField textURL;
     private javax.swing.JComboBox<String> txtDepth;
     private javax.swing.JTextArea txtSearch;

@@ -56,7 +56,7 @@
                               <Component id="txtDepth" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jButton1" min="-2" pref="144" max="-2" attributes="0"/>
-                          <Component id="boolDomain" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="restrictive" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
@@ -88,7 +88,7 @@
                           <Component id="jLabel2" alignment="0" min="-2" pref="60" max="-2" attributes="0"/>
                           <Component id="jScrollPane1" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="boolDomain" min="-2" max="-2" attributes="0"/>
+                              <Component id="restrictive" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                               <Component id="jButton1" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -167,12 +167,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton3ActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="boolDomain">
+    <Component class="javax.swing.JCheckBox" name="restrictive">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Pesquisa no dom&#xed;nio"/>
+        <Property name="text" type="java.lang.String" value="Restrito ao dom&#xed;nio"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="boolDomainActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="restrictiveActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JComboBox" name="txtDepth">
