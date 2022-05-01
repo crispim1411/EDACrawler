@@ -81,17 +81,18 @@ public class EDACrawler {
                 tmp = aux.next();
                 String src = tmp.attr("abs:src");
                 String alt_text = tmp.attr("alt");
+                
                 if (src.length() > 1) {
                     if (searchKey==null || removeDiacriticalMarks(alt_text).toLowerCase().contains(searchKey)) {
-                        ArrayList<String> arrImage = new ArrayList<>();
-                        arrImage.add(src);
 
-                        if (alt_text != "" && alt_text.length()>1) alt_text = alt_text.substring(0, 1).toUpperCase() + alt_text.substring(1);
-                        else if (alt_text.length() == 1) alt_text = alt_text.toUpperCase();
+                        if (!"".equals(alt_text) && alt_text.length()>1) 
+                            alt_text = alt_text.substring(0, 1).toUpperCase() + alt_text.substring(1);
+                        else if (alt_text.length() == 1) 
+                            alt_text = alt_text.toUpperCase();
                         else alt_text = "ZZ"; //forçar ir pro fim da lista
-
-                        arrImage.add(alt_text);
-                        payload.imgs.add(arrImage); //cada imagem é um array [url, alt]
+                        
+                        ImageInfo imgInfo = new ImageInfo(src, alt_text);
+                        payload.imgs.add(imgInfo); 
                     }
                 }
             }

@@ -6,9 +6,9 @@
 
 package edacrawler;
 
-import static edacrawler.ImageToDisplay.displayImages;
-import static edacrawler.ImageToDisplay.displayImagesByFiles;
-import static edacrawler.ImageToDisplay.imagesToSave;
+import static edacrawler.ImagePanel.displayImages;
+import static edacrawler.ImagePanel.displayImagesByFiles;
+import static edacrawler.ImagePanel.imagesToSave;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;

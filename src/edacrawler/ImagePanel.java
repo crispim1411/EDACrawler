@@ -28,16 +28,16 @@ import javax.swing.JScrollPane;
  *
  * @author PedroMatias & RodrigoCrispim
  */
-public class ImageToDisplay extends JPanel {
-    
-    public ImageToDisplay(Payload pl) {
-        try {
 
+public class ImagePanel extends JPanel {
+    
+    public ImagePanel(Payload pl) {
+        try {
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-            for (ArrayList<ArrayList<String>> array : pl.structureImgs) {
-                for (ArrayList<String> arrImage : array) {
-                    Image image = LoadImageFromUrl(arrImage.get(0));
-                    JLabel img = addToPanel(image, arrImage.get(1));
+            for (ArrayList<ImageInfo> array : pl.structureImgs) {
+                for (ImageInfo imgInfo : array) {
+                    Image image = LoadImageFromUrl(imgInfo.url);
+                    JLabel img = addToPanel(image, imgInfo.info);
                     if (img != null) {
                         add(img);
                         add(Box.createVerticalStrut(10));
@@ -75,10 +75,10 @@ public class ImageToDisplay extends JPanel {
                     
     
     public static void displayImages(Payload pl) {
-        if (pl.structureImgs.isEmpty() == false) {
+        if (pl != null && pl.structureImgs.isEmpty() == false) {
 
             //Panel e Frame
-            ImageToDisplay imgsJPanel = new ImageToDisplay(pl); //imagens adicionadas em JPanel
+            ImagePanel imgsJPanel = new ImagePanel(pl); //imagens adicionadas em JPanel
             JFrame frm = new JFrame();
             //imagens
             frm.add(imgsJPanel); //adiciona JPanel ao JFrame
@@ -132,19 +132,29 @@ public class ImageToDisplay extends JPanel {
     public static void imagesToSave(Payload pl, File dir){
         try{
             int i = 1;
-            for(ArrayList<ArrayList<String>> array : pl.structureImgs){
-                for(ArrayList<String> arrImage : array){
+            for(ArrayList<ImageInfo> array : pl.structureImgs){
+                for(ImageInfo imgInfo : array){
                     URL image_url = null;
                     //vai buscar o URL das imagens contidas no payload pl
-                    image_url = new URL (arrImage.get(0)); 
+                    image_url = new URL(imgInfo.url); 
                     //converte o URL em imagem
                     BufferedImage img = ImageIO.read(image_url);
                     
                     //escreve as imagens 
                     //Salva as imagens automaticamente usando texto Alt como nome do arquivo
                     String imageName;
-                    if ("ZZ".equals(arrImage.get(1)))imageName = "untitled".concat(Integer.toString(i++));
-                    else imageName = removeDiacriticalMarks(arrImage.get(1).replace(" ", "_").replace("/","_").replace(",","_").replace(".","_").replace(":","_").replace(";","_").replace("__","_").concat(".png"));
+                    if ("ZZ".equals(imgInfo.info))imageName = "untitled".concat(Integer.toString(i++));
+                    else imageName = removeDiacriticalMarks(
+                        imgInfo.info
+                                .replace(" ", "_")
+                                .replace("/","_")
+                                .replace(",","_")
+                                .replace(".","_")
+                                .replace(":","_")
+                                .replace(";","_")
+                                .replace("__","_")
+                                .concat(".png")
+                        );
 
                     String imagePath = dir.getAbsolutePath().concat("/").concat(imageName);
                     ImageIO.write(img, "png", new File(imagePath));          

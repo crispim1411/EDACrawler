@@ -6,7 +6,7 @@
 package edacrawler;
 
 import java.io.IOException;
-import static edacrawler.ImageToDisplay.displayImages;
+import static edacrawler.ImagePanel.displayImages;
 /**
  *
  * @author pedrodias & paulosantos

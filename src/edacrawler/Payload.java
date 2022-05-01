@@ -15,10 +15,10 @@ import java.util.logging.Logger;
  * @author PedroMatias & RodrigoCrispim
  */
 public class Payload {
-    public ArrayList<ArrayList<ArrayList<String>>> structureImgs = new ArrayList<>();
+    public ArrayList<ArrayList<ImageInfo>> structureImgs = new ArrayList<>();
     public ArrayList<ArrayList<String>> structureLinks = new ArrayList<>();
     public ArrayList<String> links;
-    public ArrayList<ArrayList<String>> imgs;
+    public ArrayList<ImageInfo> imgs;
     public String html = "";
 
     public Payload() {
@@ -31,42 +31,40 @@ public class Payload {
             //o level é a camada de pesquisa, inicia em 1
             level--; //level = index+1
             if (pl != null){
-                for (String string : pl.links) { //pl links é adicionado a structureLinks 
-                    if (containsLink(string)==false) {
+                for (String link : pl.links) { //pl links é adicionado a structureLinks 
+                    if (containsLink(link)==false) {
                         if (level == this.structureLinks.size()){
                             ArrayList<String> aux = new ArrayList<>();
-                            aux.add(string);
+                            aux.add(link);
                             this.structureLinks.add(level, aux);
                         }
                         else if (level > this.structureLinks.size()){
                             ArrayList<String> aux = new ArrayList<>();
-                            aux.add(string);
+                            aux.add(link);
                             this.structureLinks.add(aux);
                         }
                         else {
                             ArrayList<String> aux = new ArrayList<>();
                             aux = this.structureLinks.get(level);
-                            aux.add(string);
+                            aux.add(link);
                         }
                     }
                 }
 
-                for (ArrayList<String> arrImage : pl.imgs) {//pl links é adicionado a structureLinks
-                    if (containsImg(arrImage) == false) {
-                        if (level == this.structureImgs.size()){ 
-                            ArrayList<ArrayList<String>> aux = new ArrayList<>();
-                            aux.add(arrImage);
+                for (ImageInfo imgInfo : pl.imgs) {//pl links é adicionado a structureLinks
+                    if (containsImg(imgInfo) == false) {
+                        ArrayList<ImageInfo> aux = new ArrayList<>();
+                        if (level == this.structureImgs.size()){
+                            aux.add(imgInfo);
                             this.structureImgs.add(level, aux);
                         }
                         else if (level > this.structureImgs.size()){
-                            ArrayList<ArrayList<String>> aux = new ArrayList<>();
-                            aux.add(arrImage);
+                            aux.add(imgInfo);
                             this.structureImgs.add(aux);
                         }
                         else {
-                            ArrayList<ArrayList<String>> aux = new ArrayList<>();
                             aux = this.structureImgs.get(level);
-                            aux.add(arrImage);
+                            aux.add(imgInfo);
                         }
                     }
                 }
@@ -76,20 +74,21 @@ public class Payload {
         }
     }
     
+    // trocar por uma arvore?
     public void insertionSort() {
         try {
             int i,j;
 
-            for (ArrayList<ArrayList<String>> arrLevel : this.structureImgs) {
+            for (ArrayList<ImageInfo> arrLevel : this.structureImgs) {
                 for (i = 1; i < arrLevel.size(); i++) {
-                    ArrayList<String> arr= arrLevel.get(i);
-                    String string = arr.get(1);
+                    ImageInfo imgInfo= arrLevel.get(i);
+                    String string = imgInfo.info;
                     j = i;
-                    while((j > 0) && (arrLevel.get(j - 1).get(1).compareTo(string))>0) {
+                    while((j > 0) && (arrLevel.get(j - 1).info.compareTo(string))>0) {
                         arrLevel.set(j,arrLevel.get(j - 1));
                         j--;
                     }
-                    arrLevel.set(j,arr);
+                    arrLevel.set(j,imgInfo);
                 }
             }
         } catch (Exception e) {
@@ -98,10 +97,10 @@ public class Payload {
         
     }
     
-    public boolean containsImg(ArrayList<String> arrImage){
+    public boolean containsImg(ImageInfo imgInfo){
         try{
             for (int i=0; i<this.structureImgs.size(); i++){
-                if (this.structureImgs.get(i).contains(arrImage)) {
+                if (this.structureImgs.get(i).contains(imgInfo)) {
                     return true;
                 }
             } 
