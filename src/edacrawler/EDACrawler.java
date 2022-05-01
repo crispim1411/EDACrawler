@@ -24,13 +24,15 @@ import org.jsoup.select.Elements;
  */
 public class EDACrawler {
     public String searchKey;
+    public String url;
     public int limitLevel;
     
-    public EDACrawler(String string, int level) throws IOException {
+    public EDACrawler(String url, String searchKey, int level) {
         //cria crawler com texto de busca e limite de profundidade de pesquisa
-        if (string != null){
-            this.searchKey = removeDiacriticalMarks(string).toLowerCase();    
+        if (searchKey != null){
+            this.searchKey = removeDiacriticalMarks(searchKey).toLowerCase();    
         }
+        this.url = url;
         this.limitLevel = level;
     }
     
@@ -115,12 +117,17 @@ public class EDACrawler {
         }
     }
     
-    public Payload recursiveSearch(String url, boolean ifDomain) throws IOException {
+    public Payload recursiveSearch(boolean ifDomain) {
         //Retorna Payload da url origem e das urls filho 
         //se setado entra apenas nas url de mesmo dominio
-        if (url != null) {
-            Payload pl = null;
-            return recursiveSearch(pl, url, url, ifDomain, 1);
+        try {
+            if (this.url != null) {
+                Payload pl = null;
+                return recursiveSearch(pl, this.url, this.url, ifDomain, 1);
+            }
+        }
+        catch (IOException e) {
+            Logger.getLogger(Interface.class.getName()).log(Level.WARNING, null, e.getMessage());
         }
         return null;
     }

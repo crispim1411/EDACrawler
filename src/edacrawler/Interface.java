@@ -202,17 +202,13 @@ public class Interface extends javax.swing.JFrame {
             boolean ifDomain = boolDomain.isEnabled();
             
             //instancia de crawler com tema de pesquisa e profundidade
-            EDACrawler eda = new EDACrawler(searchKey, depth);
+            EDACrawler eda = new EDACrawler(url, searchKey, depth);
             //pesquisa recursiva 
-            Payload pl = eda.recursiveSearch(url, ifDomain); 
+            Payload pl = eda.recursiveSearch(ifDomain); 
             //mostra imagens num painel unico
             displayImages(pl);
             
-            Logger.getLogger(Interface.class.getName()).log(Level.INFO,"Fim");
-        } catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-        }
-          
+            Logger.getLogger(Interface.class.getName()).log(Level.INFO,"Fim");  
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -233,26 +229,19 @@ public class Interface extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        try {
-            String url = textURL.getText();
-            String searchKey = txtSearch.getText();
-            int depth = Integer.parseInt(txtDepth.getSelectedItem().toString());
-            boolean ifDomain = boolDomain.isSelected();
-            
-            //instancia de crawler com tema de pesquisa e profundidade
-            EDACrawler eda = new EDACrawler(searchKey, depth);
-            Payload pl = eda.recursiveSearch(url, ifDomain);
-            displayImages(pl);
-            if (!dir.exists()){
-                createDir();
-            }
-            imagesToSave(pl, dir);
-            
-        } catch (IOException ex) { 
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
+        String url = textURL.getText();
+        String searchKey = txtSearch.getText();
+        int depth = Integer.parseInt(txtDepth.getSelectedItem().toString());
+        boolean ifDomain = boolDomain.isSelected();
+
+        //instancia de crawler com tema de pesquisa e profundidade
+        EDACrawler eda = new EDACrawler(url, searchKey, depth);
+        Payload pl = eda.recursiveSearch(ifDomain);
+        displayImages(pl);
+        if (!dir.exists()){
+            createDir();
         }
+        imagesToSave(pl, dir);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void boolDomainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boolDomainActionPerformed
