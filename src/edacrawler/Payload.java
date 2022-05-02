@@ -6,6 +6,7 @@
 
 package edacrawler;
 
+import edacrawler.models.ImageInfo;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,9 +16,15 @@ import java.util.logging.Logger;
  * @author PedroMatias & RodrigoCrispim
  */
 public class Payload {
+    // mover para estrutura
+    // guarda Imagens por nível
     public ArrayList<ArrayList<ImageInfo>> structureImgs = new ArrayList<>();
+    // guarda os links por nível
     public ArrayList<ArrayList<String>> structureLinks = new ArrayList<>();
+    
+    // link payload
     public ArrayList<String> links;
+    // imagens payload
     public ArrayList<ImageInfo> imgs;
 
     public Payload() {
@@ -71,25 +78,20 @@ public class Payload {
     
     // trocar por uma arvore?
     public void insertionSort() {
-        try {
-            int i,j;
-
-            for (ArrayList<ImageInfo> arrLevel : this.structureImgs) {
-                for (i = 1; i < arrLevel.size(); i++) {
-                    ImageInfo imgInfo= arrLevel.get(i);
-                    String string = imgInfo.info;
-                    j = i;
-                    while((j > 0) && (arrLevel.get(j - 1).info.compareTo(string))>0) {
-                        arrLevel.set(j,arrLevel.get(j - 1));
-                        j--;
-                    }
-                    arrLevel.set(j,imgInfo);
-                }
-            }
-        } catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-        }
+        int i,j;
         
+        for (ArrayList<ImageInfo> arrLevel : this.structureImgs) {
+            for (i = 1; i < arrLevel.size(); i++) {
+                ImageInfo imgInfo= arrLevel.get(i);
+                String string = imgInfo.info;
+                j = i;
+                while((j > 0) && (arrLevel.get(j - 1).info.compareTo(string))>0) {
+                    arrLevel.set(j,arrLevel.get(j - 1));
+                    j--;
+                }
+                arrLevel.set(j,imgInfo);
+            }
+        }
     }
     
     public boolean containsImg(ImageInfo imgInfo){

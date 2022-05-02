@@ -5,6 +5,7 @@
  */
 package edacrawler;
 
+import edacrawler.models.ImageInfo;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;

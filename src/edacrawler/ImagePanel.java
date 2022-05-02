@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package edacrawler;
+import edacrawler.models.ImageInfo;
 import static edacrawler.EDACrawler.removeDiacriticalMarks;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
