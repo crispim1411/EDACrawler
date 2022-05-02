@@ -62,15 +62,11 @@ public class EDACrawler {
 
             while (aux.hasNext()) {
                 String href = aux.next().attr("abs:href");
-                if (href.length() > 1) {
-                    if (restrictive) { //se flag de dominio so adiciona se for do mesmo dominio
-                        if (href.contains(domain)) {
-                            payload.links.add(href);  
-                        }
-                    }
-                    else {
-                        payload.links.add(href);
-                    }
+                if (href.length() < 1) continue;
+               
+                //se flag de dominio so adiciona se for do mesmo dominio
+                if (!restrictive || href.contains(domain)) {
+                    payload.links.add(href);
                 }
             }
 
@@ -100,7 +96,6 @@ public class EDACrawler {
         else {
             Logger.getLogger(Interface.class.getName()).log(Level.WARNING, null, resp.statusCode());
         }
-        payload.html = doc.html();
 
         return payload;
     }

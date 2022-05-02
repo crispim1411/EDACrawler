@@ -19,58 +19,53 @@ public class Payload {
     public ArrayList<ArrayList<String>> structureLinks = new ArrayList<>();
     public ArrayList<String> links;
     public ArrayList<ImageInfo> imgs;
-    public String html = "";
 
     public Payload() {
         links = new ArrayList<>();
-        imgs = new ArrayList<>(); //imagem: [[src1,alt1], [src2,alt2], ... ]
+        imgs = new ArrayList<>(); 
     }
     
     public void addToStructure(Payload pl, int level) {
-        try {
-            //o level é a camada de pesquisa, inicia em 1
-            level--; //level = index+1
-            if (pl != null){
-                for (String link : pl.links) { //pl links é adicionado a structureLinks 
-                    if (containsLink(link)==false) {
-                        if (level == this.structureLinks.size()){
-                            ArrayList<String> aux = new ArrayList<>();
-                            aux.add(link);
-                            this.structureLinks.add(level, aux);
-                        }
-                        else if (level > this.structureLinks.size()){
-                            ArrayList<String> aux = new ArrayList<>();
-                            aux.add(link);
-                            this.structureLinks.add(aux);
-                        }
-                        else {
-                            ArrayList<String> aux = new ArrayList<>();
-                            aux = this.structureLinks.get(level);
-                            aux.add(link);
-                        }
-                    }
-                }
-
-                for (ImageInfo imgInfo : pl.imgs) {//pl links é adicionado a structureLinks
-                    if (containsImg(imgInfo) == false) {
-                        ArrayList<ImageInfo> aux = new ArrayList<>();
-                        if (level == this.structureImgs.size()){
-                            aux.add(imgInfo);
-                            this.structureImgs.add(level, aux);
-                        }
-                        else if (level > this.structureImgs.size()){
-                            aux.add(imgInfo);
-                            this.structureImgs.add(aux);
-                        }
-                        else {
-                            aux = this.structureImgs.get(level);
-                            aux.add(imgInfo);
-                        }
-                    }
-                }
+        //o level é a camada de pesquisa, inicia em 1
+        if (pl == null) return;
+        
+        level--; //level = index+1
+        //pl links é adicionado a structureLinks 
+        for (String link : pl.links) { 
+            if (containsLink(link)) continue;
+            
+            ArrayList<String> aux = new ArrayList<>();
+            if (level == this.structureLinks.size()){
+                aux.add(link);
+                this.structureLinks.add(level, aux);
             }
-        } catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
+            else if (level > this.structureLinks.size()){
+                aux.add(link);
+                this.structureLinks.add(aux);
+            }
+            else {
+                aux = this.structureLinks.get(level);
+                aux.add(link);
+            }
+        }
+
+        //pl links é adicionado a structureLinks
+        for (ImageInfo imgInfo : pl.imgs) {
+            if (containsImg(imgInfo)) continue; 
+            
+            ArrayList<ImageInfo> aux = new ArrayList<>();
+            if (level == this.structureImgs.size()){
+                aux.add(imgInfo);
+                this.structureImgs.add(level, aux);
+            }
+            else if (level > this.structureImgs.size()){
+                aux.add(imgInfo);
+                this.structureImgs.add(aux);
+            }
+            else {
+                aux = this.structureImgs.get(level);
+                aux.add(imgInfo);
+            }
         }
     }
     
