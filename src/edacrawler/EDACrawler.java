@@ -134,7 +134,6 @@ public class EDACrawler {
             while (aux.hasNext()) { //se há links a iterar
                 nextUrl = aux.next().key; //pega o proximo
                 if (pl.visited.contains(nextUrl) == false) { //se o link não foi visitado
-                    System.out.println("visiting: "+nextUrl);
                     Payload tmp = this.process(nextUrl, domain, ifDomain); //obtem payload
                     pl.visited.add(nextUrl);
                     if (tmp != null){                        

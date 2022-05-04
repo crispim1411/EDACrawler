@@ -35,7 +35,7 @@ public class SkipList {
     
     public Node head;
     public int level;
-    private static final int MAXLEVEL = 2;
+    private static final int MAXLEVEL = 20;
 
     public SkipList() {
         this.head = new Node();
