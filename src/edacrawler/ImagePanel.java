@@ -6,6 +6,7 @@
 package edacrawler;
 import edacrawler.models.ImageInfo;
 import static edacrawler.EDACrawler.removeDiacriticalMarks;
+import edacrawler.models.SkipList.Node;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -29,25 +30,24 @@ import javax.swing.JScrollPane;
  *
  * @author PedroMatias & RodrigoCrispim
  */
-
 public class ImagePanel extends JPanel {
     
     public ImagePanel(Payload pl) {
         try {
+            // carrega as imagens no painel
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-            for (ArrayList<ImageInfo> array : pl.structureImgs) {
-                for (ImageInfo imgInfo : array) {
-                    Image image = LoadImageFromUrl(imgInfo.url);
-                    JLabel img = addToPanel(image, imgInfo.info);
-                    if (img != null) {
-                        add(img);
-                        add(Box.createVerticalStrut(10));
-                    }
+            ArrayList<Node> arr = pl.structureImgs.ToList();
+            for (Node imgInfo : arr) {
+                Image image = LoadImageFromUrl(imgInfo.key);
+                JLabel img = addToPanel(image, imgInfo.value);
+                if (img != null) {
+                    add(img);
+                    add(Box.createVerticalStrut(10));
                 }
-
             }
-        } catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
+            
+        } catch (IOException e) {
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, "IO", e);
         }
     }
     
@@ -76,7 +76,7 @@ public class ImagePanel extends JPanel {
                     
     
     public static void displayImages(Payload pl) {
-        if (pl != null && pl.structureImgs.isEmpty() == false) {
+        if (pl != null && pl.structureImgs.IsEmpty() == false) {
 
             //Panel e Frame
             ImagePanel imgsJPanel = new ImagePanel(pl); //imagens adicionadas em JPanel
@@ -133,33 +133,33 @@ public class ImagePanel extends JPanel {
     public static void imagesToSave(Payload pl, File dir){
         try{
             int i = 1;
-            for(ArrayList<ImageInfo> array : pl.structureImgs){
-                for(ImageInfo imgInfo : array){
-                    URL image_url = null;
-                    //vai buscar o URL das imagens contidas no payload pl
-                    image_url = new URL(imgInfo.url); 
-                    //converte o URL em imagem
-                    BufferedImage img = ImageIO.read(image_url);
-                    
-                    //escreve as imagens 
-                    //Salva as imagens automaticamente usando texto Alt como nome do arquivo
-                    String imageName;
-                    if ("ZZ".equals(imgInfo.info))imageName = "untitled".concat(Integer.toString(i++));
-                    else imageName = removeDiacriticalMarks(
-                        imgInfo.info
-                                .replace(" ", "_")
-                                .replace("/","_")
-                                .replace(",","_")
-                                .replace(".","_")
-                                .replace(":","_")
-                                .replace(";","_")
-                                .replace("__","_")
-                                .concat(".png")
-                        );
+            
+            ArrayList<Node> arr = pl.structureImgs.ToList();
+            for(Node imgInfo : arr){
+                URL image_url = null;
+                //vai buscar o URL das imagens contidas no payload pl
+                image_url = new URL(imgInfo.key); 
+                //converte o URL em imagem
+                BufferedImage img = ImageIO.read(image_url);
 
-                    String imagePath = dir.getAbsolutePath().concat("/").concat(imageName);
-                    ImageIO.write(img, "png", new File(imagePath));          
-                }
+                //escreve as imagens 
+                //Salva as imagens automaticamente usando texto Alt como nome do arquivo
+                String imageName;
+                if ("ZZ".equals(imgInfo.value))imageName = "untitled".concat(Integer.toString(i++));
+                else imageName = removeDiacriticalMarks(
+                    imgInfo.value
+                            .replace(" ", "_")
+                            .replace("/","_")
+                            .replace(",","_")
+                            .replace(".","_")
+                            .replace(":","_")
+                            .replace(";","_")
+                            .replace("__","_")
+                            .concat(".png")
+                    );
+
+                String imagePath = dir.getAbsolutePath().concat("/").concat(imageName);
+                ImageIO.write(img, "png", new File(imagePath));
             }
         } catch (Exception e){
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);

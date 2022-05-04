@@ -6,6 +6,7 @@
 package edacrawler;
 
 import edacrawler.models.ImageInfo;
+import edacrawler.models.SkipList.Node;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -121,37 +122,28 @@ public class EDACrawler {
         //alterar esse trecho
         if (pl == null) { //Payload vazio               
             pl = this.process(url, domain, ifDomain); //carrega links level 1
-            pl.addToStructure(pl, level); //links do nivel 1          
+            pl.addToStructure(pl); //links do nivel 1          
         }
 
         //se pl possui size >= level possui iteraveis, se level limite ainda não alcançado
-        if (pl.structureLinks.size() >= level && level < this.limitLevel) {
+        if (level < this.limitLevel) {
             String nextUrl;
-            Iterator<String> aux = pl.structureLinks.get(level-1).iterator(); //links do level iteravel
-
+            ArrayList list = pl.structureLinks.ToList(); //links do level iteravel
+            Iterator<Node> aux = list.iterator();
+            
             while (aux.hasNext()) { //se há links a iterar
-                nextUrl = aux.next(); //pega o proximo
-                if (visited(pl.structureLinks, nextUrl, level) == false) { //se o link não foi visitado
+                nextUrl = aux.next().key; //pega o proximo
+                if (pl.visited.contains(nextUrl) == false) { //se o link não foi visitado
+                    System.out.println("visiting: "+nextUrl);
                     Payload tmp = this.process(nextUrl, domain, ifDomain); //obtem payload
+                    pl.visited.add(nextUrl);
                     if (tmp != null){                        
-                        pl.addToStructure(tmp, level+1);
+                        pl.addToStructure(tmp);
                         recursiveSearch(pl, nextUrl, domain,ifDomain, level+1); //entra no proximo nivel
                     }
                 }
             }
         }
-        pl.insertionSort();
         return pl;
     }
-    
-    public boolean visited(ArrayList<ArrayList<String>> structure, String url, int level){
-        level--;
-        for (int i=0; i<structure.size(); i++){
-            if (structure.get(i).contains(url) && i!=level) {
-                return true;
-            }
-        } 
-        return false;
-    }
-
 }

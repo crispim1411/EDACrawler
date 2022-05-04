@@ -68,10 +68,11 @@ public class SkipList {
         
         Node[] update = FillUpdateVector(this.head, new Node[randomLevel+1], key, randomLevel);
         
-        /*if (update[0].forward[0] != null && update[0].forward[0].key.equals(key)) { //remover
-            System.out.println("Item already inserted");
+        if (update[0].forward[0] != null && 
+                update[0].forward[0].key.equals(key)) {
             return;
-        }*/
+        }
+        
         Node newNode = new Node(key, value, randomLevel);
         
         for(int lvl = 0; lvl <= randomLevel; lvl++) {
@@ -85,8 +86,12 @@ public class SkipList {
         }
     }
     
+    public boolean IsEmpty() {
+        return this.head.forward[0] == null;
+    }
+    
     public void Display() {
-        if (this.head.forward[0] == null) {
+        if (this.IsEmpty()) {
             System.out.println("Empty SkipList");
             return;
         }
@@ -110,9 +115,33 @@ public class SkipList {
         Node cursor = this.head;
         
         while (cursor.forward[0] != null) {
-            result.add(cursor);
+            result.add(cursor.forward[0]);
             cursor = cursor.forward[0];
         }
         return result;
+    }
+    
+    public boolean Contains(String key) {
+        if (IsEmpty()) {
+            return false;
+        }
+        return Contains(this.head, key, this.level);
+    }
+    
+    private boolean Contains(Node cursor, String key, int level) {
+        System.out.println("cursor: "+cursor.key+" -> ");
+        if (cursor.forward[level] != null) {
+            if (cursor.forward[level].key.compareTo(key) < 0) {
+                return Contains(cursor.forward[level], key, level);
+            } 
+            else if (cursor.forward[level].key.compareTo(key) == 0) {
+                return true;
+            }
+        }
+                
+        if (level > 0) {
+            return Contains(cursor, key, level-1);
+        }
+        return false;
     }
 }

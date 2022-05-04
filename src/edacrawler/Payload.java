@@ -7,6 +7,7 @@
 package edacrawler;
 
 import edacrawler.models.ImageInfo;
+import edacrawler.models.SkipList;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,12 +17,9 @@ import java.util.logging.Logger;
  * @author PedroMatias & RodrigoCrispim
  */
 public class Payload {
-    // mover para estrutura
-    // guarda Imagens por nível
-    public ArrayList<ArrayList<ImageInfo>> structureImgs = new ArrayList<>();
-    // guarda os links por nível
-    public ArrayList<ArrayList<String>> structureLinks = new ArrayList<>();
-    
+    public SkipList structureImgs = new SkipList();
+    public SkipList structureLinks = new SkipList();
+    public ArrayList visited = new ArrayList();
     // link payload
     public ArrayList<String> links;
     // imagens payload
@@ -32,91 +30,17 @@ public class Payload {
         imgs = new ArrayList<>(); 
     }
     
-    public void addToStructure(Payload pl, int level) {
-        //o level é a camada de pesquisa, inicia em 1
+    public void addToStructure(Payload pl) {
         if (pl == null) return;
-        
-        level--; //level = index+1
-        //pl links é adicionado a structureLinks 
+
         for (String link : pl.links) { 
-            if (containsLink(link)) continue;
-            
-            ArrayList<String> aux = new ArrayList<>();
-            if (level == this.structureLinks.size()){
-                aux.add(link);
-                this.structureLinks.add(level, aux);
-            }
-            else if (level > this.structureLinks.size()){
-                aux.add(link);
-                this.structureLinks.add(aux);
-            }
-            else {
-                aux = this.structureLinks.get(level);
-                aux.add(link);
-            }
+            if (link == null || link.isBlank()) continue;
+            this.structureLinks.Insert(link, link);
         }
 
-        //pl links é adicionado a structureLinks
         for (ImageInfo imgInfo : pl.imgs) {
-            if (containsImg(imgInfo)) continue; 
-            
-            ArrayList<ImageInfo> aux = new ArrayList<>();
-            if (level == this.structureImgs.size()){
-                aux.add(imgInfo);
-                this.structureImgs.add(level, aux);
-            }
-            else if (level > this.structureImgs.size()){
-                aux.add(imgInfo);
-                this.structureImgs.add(aux);
-            }
-            else {
-                aux = this.structureImgs.get(level);
-                aux.add(imgInfo);
-            }
+            if (imgInfo.url == null || imgInfo.url.isBlank()) continue;
+            this.structureImgs.Insert(imgInfo.url, imgInfo.info);
         }
-    }
-    
-    // trocar por uma arvore?
-    public void insertionSort() {
-        int i,j;
-        
-        for (ArrayList<ImageInfo> arrLevel : this.structureImgs) {
-            for (i = 1; i < arrLevel.size(); i++) {
-                ImageInfo imgInfo= arrLevel.get(i);
-                String string = imgInfo.info;
-                j = i;
-                while((j > 0) && (arrLevel.get(j - 1).info.compareTo(string))>0) {
-                    arrLevel.set(j,arrLevel.get(j - 1));
-                    j--;
-                }
-                arrLevel.set(j,imgInfo);
-            }
-        }
-    }
-    
-    public boolean containsImg(ImageInfo imgInfo){
-        try{
-            for (int i=0; i<this.structureImgs.size(); i++){
-                if (this.structureImgs.get(i).contains(imgInfo)) {
-                    return true;
-                }
-            } 
-        } catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-        }
-        return false;
-    }
-    
-    public boolean containsLink(String url) {
-        try{
-            for (int i=0;i<this.structureLinks.size();i++) {
-                if (this.structureLinks.get(i).contains(url)) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
-        }
-        return false;
-    }   
+    }  
 }
