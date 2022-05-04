@@ -16,7 +16,7 @@ import java.util.Random;
 
 
 public class SkipList {
-    class Node {
+    public class Node {
         public String key;
         public String value;
         public Node[] forward;
@@ -105,4 +105,14 @@ public class SkipList {
         }
     }
     
+    public ArrayList<Node> ToList() {
+        ArrayList result = new ArrayList();
+        Node cursor = this.head;
+        
+        while (cursor.forward[0] != null) {
+            result.add(cursor);
+            cursor = cursor.forward[0];
+        }
+        return result;
+    }
 }
