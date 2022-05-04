@@ -1,8 +1,7 @@
 # EDACrawler
 Projeto final da disciplina de Estruturas de Dados no Instituto Politécnico de Tomar
-![image](https://user-images.githubusercontent.com/29204714/166623648-0e1b6129-efb3-4d8c-a1cc-5c0adb2ae508.png)
 
-## Pesquisa
+## Demonstração
 ![image](https://user-images.githubusercontent.com/29204714/166624192-62751628-31c1-44f6-8193-5a694033d822.png)
 
 ## Ajustes
