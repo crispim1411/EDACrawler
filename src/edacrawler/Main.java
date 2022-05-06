@@ -5,10 +5,7 @@
  */
 package edacrawler;
 
-import java.io.IOException;
-import static edacrawler.ImagePanel.displayImages;
 import edacrawler.models.SkipList;
-import edacrawler.models.SkipList.Node;
 /**
  *
  * @author pedrodias & paulosantos
