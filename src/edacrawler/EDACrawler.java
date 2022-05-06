@@ -5,8 +5,9 @@
  */
 package edacrawler;
 
+import edacrawler.models.Payload;
 import edacrawler.models.ImageInfo;
-import edacrawler.models.SkipList.Node;
+import edacrawler.models.SkipList;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
@@ -28,14 +29,16 @@ public class EDACrawler {
     public String searchKey;
     public String url;
     public int limitLevel;
+    public boolean restrictive;
     
-    public EDACrawler(String url, String searchKey, int level) {
+    public EDACrawler(String url, String searchKey, int level, boolean restrictive) {
         //cria crawler com texto de busca e limite de profundidade de pesquisa
         if (searchKey != null){
             this.searchKey = removeDiacriticalMarks(searchKey).toLowerCase();    
         }
         this.url = url;
         this.limitLevel = level;
+        this.restrictive = restrictive;
     }
     
     public static String removeDiacriticalMarks(String string) {
@@ -43,15 +46,9 @@ public class EDACrawler {
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 
-    public Payload process(String url, String domain, boolean restrictive) throws IOException {
-        //retorna as imagens e links de um site 
-        //caso restrictive True entra apenas nos links que fazem parte do dominio
+    public Payload process(String url) throws IOException {
         Payload payload = new Payload();
 
-        if (!url.endsWith("/")) {
-            url += "/";
-        }
-        
         //Conexão
         Connection con = Jsoup.connect(url).ignoreContentType(true).timeout(10000);
         Connection.Response resp = con.execute();
@@ -67,7 +64,7 @@ public class EDACrawler {
                 if (href.length() < 1) continue;
                
                 //se flag de dominio so adiciona se for do mesmo dominio
-                if (!restrictive || href.contains(domain)) {
+                if (!restrictive || href.contains(this.url)) {
                     payload.links.add(href);
                 }
             }
@@ -90,7 +87,8 @@ public class EDACrawler {
                         else alt_text = "ZZ"; //forçar ir pro fim da lista
                         
                         ImageInfo imgInfo = new ImageInfo(src, alt_text);
-                        payload.imgs.add(imgInfo); 
+                        if (!payload.imgs.contains(imgInfo)) 
+                            payload.imgs.add(imgInfo);
                     }
                 }
             }
@@ -102,13 +100,18 @@ public class EDACrawler {
         return payload;
     }
     
-    public Payload recursiveSearch(boolean ifDomain) {
-        //Retorna Payload da url origem e das urls filho 
-        //se setado entra apenas nas url de mesmo dominio
+    public ArrayList recursiveSearch() {
         try {
             if (this.url != null) {
-                Payload pl = null;
-                return recursiveSearch(pl, this.url, this.url, ifDomain, 1);
+                SkipList dataStructure = new SkipList();
+                ArrayList visitedLinks = new ArrayList();
+                
+                Payload pl = this.process(url);
+                visitedLinks.add(url);
+                dataStructure.InsertMany(pl.imgs);
+                recursiveSearch(dataStructure, pl.links, visitedLinks, 1);
+                
+                return dataStructure.ToList();
             }
         }
         catch (IOException e) {
@@ -118,31 +121,35 @@ public class EDACrawler {
         return null;
     }
     
-    public Payload recursiveSearch(Payload pl, String url, String domain, boolean ifDomain, int level) throws IOException {           
-        //alterar esse trecho
-        if (pl == null) { //Payload vazio               
-            pl = this.process(url, domain, ifDomain); //carrega links level 1
-            pl.addToStructure(pl); //links do nivel 1          
-        }
-
-        //se pl possui size >= level possui iteraveis, se level limite ainda não alcançado
+    public void recursiveSearch(
+        SkipList dataStructure, 
+        ArrayList<String> linksToVisit, 
+        ArrayList<String> visitedLinks, 
+        int level) throws IOException {
+        
         if (level < this.limitLevel) {
             String nextUrl;
-            ArrayList list = pl.structureLinks.ToList(); //links do level iteravel
-            Iterator<Node> aux = list.iterator();
+            Iterator<String> linkIter = linksToVisit.iterator();    
+            ArrayList<String> nextLevelLinks = new ArrayList();
             
-            while (aux.hasNext()) { //se há links a iterar
-                nextUrl = aux.next().key; //pega o proximo
-                if (pl.visited.contains(nextUrl) == false) { //se o link não foi visitado
-                    Payload tmp = this.process(nextUrl, domain, ifDomain); //obtem payload
-                    pl.visited.add(nextUrl);
-                    if (tmp != null){                        
-                        pl.addToStructure(tmp);
-                        recursiveSearch(pl, nextUrl, domain,ifDomain, level+1); //entra no proximo nivel
+            while (linkIter.hasNext()) {
+                nextUrl = linkIter.next();
+                
+                if (!visitedLinks.contains(nextUrl)) {
+                    Payload tmp = this.process(nextUrl); 
+                    visitedLinks.add(nextUrl);
+                
+                    dataStructure.InsertMany(tmp.imgs);
+                    
+                    for (String link : tmp.links) { 
+                        if (!nextLevelLinks.contains(link) && 
+                            !visitedLinks.contains(link))
+                            nextLevelLinks.add(link);
                     }
                 }
             }
+            recursiveSearch(dataStructure, nextLevelLinks, visitedLinks, level+1); //entra no proximo nivel
+            
         }
-        return pl;
     }
 }

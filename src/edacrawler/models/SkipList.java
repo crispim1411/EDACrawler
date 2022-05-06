@@ -63,13 +63,20 @@ public class SkipList {
         return update;
     }
     
+    public void InsertMany(ArrayList<ImageInfo> listToInsert) {
+        for (ImageInfo imgInfo : listToInsert) {
+            Insert(imgInfo.info, imgInfo.url);
+        }
+    }
+    
     public void Insert(String key, String value) {
         int randomLevel = getRandomLevel();
         
         Node[] update = FillUpdateVector(this.head, new Node[randomLevel+1], key, randomLevel);
         
         if (update[0].forward[0] != null && 
-                update[0].forward[0].key.equals(key)) {
+            update[0].forward[0].key.equals(key) &&
+            update[0].forward[0].value.equals(value)) {
             return;
         }
         
@@ -86,12 +93,12 @@ public class SkipList {
         }
     }
     
-    public boolean IsEmpty() {
+    public boolean isEmpty() {
         return this.head.forward[0] == null;
     }
     
     public void Display() {
-        if (this.IsEmpty()) {
+        if (this.isEmpty()) {
             System.out.println("Empty SkipList");
             return;
         }
@@ -122,7 +129,7 @@ public class SkipList {
     }
     
     public boolean Contains(String key) {
-        if (IsEmpty()) {
+        if (isEmpty()) {
             return false;
         }
         return Contains(this.head, key, this.level);

@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package edacrawler;
-import edacrawler.models.ImageInfo;
 import static edacrawler.EDACrawler.removeDiacriticalMarks;
 import edacrawler.models.SkipList.Node;
 import java.awt.Image;
@@ -32,14 +31,13 @@ import javax.swing.JScrollPane;
  */
 public class ImagePanel extends JPanel {
     
-    public ImagePanel(Payload pl) {
+    public ImagePanel(ArrayList<Node> arr) {
         try {
             // carrega as imagens no painel
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-            ArrayList<Node> arr = pl.structureImgs.ToList();
             for (Node imgInfo : arr) {
-                Image image = LoadImageFromUrl(imgInfo.key);
-                JLabel img = addToPanel(image, imgInfo.value);
+                Image image = LoadImageFromUrl(imgInfo.value);
+                JLabel img = addToPanel(image, imgInfo.key);
                 if (img != null) {
                     add(img);
                     add(Box.createVerticalStrut(10));
@@ -75,11 +73,11 @@ public class ImagePanel extends JPanel {
     }
                     
     
-    public static void displayImages(Payload pl) {
-        if (pl != null && pl.structureImgs.IsEmpty() == false) {
+    public static void displayImages(ArrayList data) {
+        if (data != null && data.isEmpty() == false) {
 
             //Panel e Frame
-            ImagePanel imgsJPanel = new ImagePanel(pl); //imagens adicionadas em JPanel
+            ImagePanel imgsJPanel = new ImagePanel(data); //imagens adicionadas em JPanel
             JFrame frm = new JFrame();
             //imagens
             frm.add(imgsJPanel); //adiciona JPanel ao JFrame
@@ -130,11 +128,10 @@ public class ImagePanel extends JPanel {
         }
     }
     
-    public static void imagesToSave(Payload pl, File dir){
+    public static void imagesToSave(ArrayList<Node> arr, File dir){
         try{
             int i = 1;
             
-            ArrayList<Node> arr = pl.structureImgs.ToList();
             for(Node imgInfo : arr){
                 URL image_url = null;
                 //vai buscar o URL das imagens contidas no payload pl

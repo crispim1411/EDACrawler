@@ -10,7 +10,7 @@ import static edacrawler.ImagePanel.displayImages;
 import static edacrawler.ImagePanel.displayImagesByFiles;
 import static edacrawler.ImagePanel.imagesToSave;
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -200,11 +200,11 @@ public class Interface extends javax.swing.JFrame {
             int depth = Integer.parseInt(txtDepth.getSelectedItem().toString());
             
             //instancia de crawler com tema de pesquisa e profundidade
-            EDACrawler eda = new EDACrawler(url, searchKey, depth);
+            EDACrawler eda = new EDACrawler(url, searchKey, depth, restrictive.isEnabled());
             //pesquisa recursiva 
-            Payload pl = eda.recursiveSearch(restrictive.isEnabled()); 
+            ArrayList result = eda.recursiveSearch(); 
             //mostra imagens num painel unico
-            displayImages(pl);
+            displayImages(result);
             
             Logger.getLogger(Interface.class.getName()).log(Level.INFO,"Fim");  
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -230,16 +230,15 @@ public class Interface extends javax.swing.JFrame {
         String url = textURL.getText();
         String searchKey = txtSearch.getText();
         int depth = Integer.parseInt(txtDepth.getSelectedItem().toString());
-        boolean ifDomain = restrictive.isSelected();
 
         //instancia de crawler com tema de pesquisa e profundidade
-        EDACrawler eda = new EDACrawler(url, searchKey, depth);
-        Payload pl = eda.recursiveSearch(ifDomain);
-        displayImages(pl);
+        EDACrawler eda = new EDACrawler(url, searchKey, depth, restrictive.isSelected());
+        ArrayList result = eda.recursiveSearch();
+        displayImages(result);
         if (!dir.exists()){
             createDir();
         }
-        imagesToSave(pl, dir);
+        imagesToSave(result, dir);
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void restrictiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restrictiveActionPerformed
