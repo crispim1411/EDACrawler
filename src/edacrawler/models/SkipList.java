@@ -24,7 +24,7 @@ public class SkipList {
         Node() {
             this.key = null;
             this.value = null;
-            this.forward = new Node[MAXLEVEL+1];
+            this.forward = new Node[SkipList.this.maxLevel+1];
         }
         Node(String key, String value, int randomLevel) {
             this.key = key;
@@ -35,9 +35,10 @@ public class SkipList {
     
     public Node head;
     public int level;
-    private static final int MAXLEVEL = 20;
+    public final int maxLevel;
 
-    public SkipList() {
+    public SkipList(int maxLevel) {
+        this.maxLevel = maxLevel;
         this.head = new Node();
         this.level = 0;
     }
@@ -45,7 +46,7 @@ public class SkipList {
     private int getRandomLevel() {
         Random rand = new Random();
         int level = 0;
-        while (rand.nextFloat() < 0.5 && level < MAXLEVEL) {
+        while (rand.nextFloat() < 0.5 && level < maxLevel) {
             level += 1;
         }
         return level;
@@ -136,7 +137,6 @@ public class SkipList {
     }
     
     private boolean Contains(Node cursor, String key, int level) {
-        System.out.println("cursor: "+cursor.key+" -> ");
         if (cursor.forward[level] != null) {
             if (cursor.forward[level].key.compareTo(key) < 0) {
                 return Contains(cursor.forward[level], key, level);

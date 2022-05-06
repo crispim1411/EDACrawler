@@ -18,7 +18,7 @@ public class Main {
         Payload pl = eda.recursiveSearch(true); //links da url
 
         displayImages(pl);  */
-        SkipList sl = new SkipList();
+        SkipList sl = new SkipList(4);
         sl.Display();
         sl.Insert("ca", "4");
         sl.Insert("ac", "9");

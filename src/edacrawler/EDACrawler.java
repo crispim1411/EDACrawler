@@ -103,13 +103,13 @@ public class EDACrawler {
     public ArrayList recursiveSearch() {
         try {
             if (this.url != null) {
-                SkipList dataStructure = new SkipList();
-                ArrayList visitedLinks = new ArrayList();
+                SkipList dataStructure = new SkipList(20);
+                SkipList visitedLinks = new SkipList(10);
                 
                 Payload pl = this.process(url);
-                visitedLinks.add(url);
+                visitedLinks.Insert(url, url);
                 dataStructure.InsertMany(pl.imgs);
-                recursiveSearch(dataStructure, pl.links, visitedLinks, 1);
+                recursiveSearch(dataStructure, visitedLinks, pl.links, 1);
                 
                 return dataStructure.ToList();
             }
@@ -123,8 +123,8 @@ public class EDACrawler {
     
     public void recursiveSearch(
         SkipList dataStructure, 
-        ArrayList<String> linksToVisit, 
-        ArrayList<String> visitedLinks, 
+        SkipList visitedLinks,
+        ArrayList<String> linksToVisit,
         int level) throws IOException {
         
         if (level < this.limitLevel) {
@@ -135,20 +135,20 @@ public class EDACrawler {
             while (linkIter.hasNext()) {
                 nextUrl = linkIter.next();
                 
-                if (!visitedLinks.contains(nextUrl)) {
+                if (!visitedLinks.Contains(nextUrl)) {
                     Payload tmp = this.process(nextUrl); 
-                    visitedLinks.add(nextUrl);
+                    visitedLinks.Insert(nextUrl, nextUrl);
                 
                     dataStructure.InsertMany(tmp.imgs);
                     
                     for (String link : tmp.links) { 
                         if (!nextLevelLinks.contains(link) && 
-                            !visitedLinks.contains(link))
+                            !visitedLinks.Contains(link))
                             nextLevelLinks.add(link);
                     }
                 }
             }
-            recursiveSearch(dataStructure, nextLevelLinks, visitedLinks, level+1); //entra no proximo nivel
+            recursiveSearch(dataStructure, visitedLinks, nextLevelLinks, level+1); //entra no proximo nivel
             
         }
     }
