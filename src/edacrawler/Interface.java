@@ -203,6 +203,7 @@ public class Interface extends javax.swing.JFrame {
             EDACrawler eda = new EDACrawler(url, searchKey, depth, restrictive.isEnabled());
             //pesquisa recursiva 
             ArrayList result = eda.recursiveSearch(); 
+            Logger.getLogger(Interface.class.getName()).log(Level.INFO,"Loading images");
             //mostra imagens num painel unico
             displayImages(result);
             

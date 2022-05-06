@@ -10,7 +10,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -32,30 +31,39 @@ import javax.swing.JScrollPane;
 public class ImagePanel extends JPanel {
     
     public ImagePanel(ArrayList<Node> arr) {
-        try {
-            // carrega as imagens no painel
-            setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-            for (Node imgInfo : arr) {
-                Image image = LoadImageFromUrl(imgInfo.value);
-                JLabel img = addToPanel(image, imgInfo.key);
-                if (img != null) {
-                    add(img);
-                    add(Box.createVerticalStrut(10));
-                }
-            }
+        // carrega as imagens no painel
+        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        for (Node imgInfo : arr) {
+            Image image = LoadImageFromUrl(imgInfo.value);
+            if (image == null) continue;
             
-        } catch (IOException e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, "IO", e);
+            JLabel img = addToPanel(image, imgInfo.key);
+            if (img != null) {
+                add(img);
+                add(Box.createVerticalStrut(10));
+            }
         }
     }
     
-    private static Image LoadImageFromUrl(String url) throws MalformedURLException, IOException {
-        URL image_url = new URL(url); 
-        return ImageIO.read(image_url);
+    private static Image LoadImageFromUrl(String url) {
+        try {
+            URL image_url = new URL(url); 
+            return ImageIO.read(image_url);
+        }
+        catch (IOException e){
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, "Error reading URL: {0}", url);
+        }
+        return null;
     }
     
-    private static Image LoadImageFromFile(File imgFile) throws IOException {
-        return ImageIO.read(imgFile);
+    private static Image LoadImageFromFile(File imgFile) {
+        try {
+            return ImageIO.read(imgFile);
+        }
+        catch (IOException e){
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, "Error reading file: {0}", imgFile.toString());
+        }
+        return null;
     }
     
     private static JLabel addToPanel(Image image, String title) {
@@ -97,35 +105,31 @@ public class ImagePanel extends JPanel {
     }
     
     public static void displayImagesByFiles(File[] files){
-        try {
-            JFrame frm = new JFrame();
-            JPanel panel = new JPanel();
-            //lê a imagem do ficheiro escolhido
-            panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-            for (File getFileImg : files){
+        JFrame frm = new JFrame();
+        JPanel panel = new JPanel();
+        //lê a imagem do ficheiro escolhido
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        for (File getFileImg : files){
 
-                //File getFileImg = openFileChooser.getSelectedFile();
-                String imgTitle = getFileImg.getName();
-                Image image = LoadImageFromFile(getFileImg);
-                JLabel lbl = addToPanel(image, imgTitle);
-                
-                panel.add(lbl);
-                panel.add(Box.createHorizontalStrut(10));
-            }
-            frm.add(panel);
-            frm.pack();
-            frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
-            
-            //scroll
-            JScrollPane scrPane = new JScrollPane(panel); //Um JPanel com scroll das imagens
-            scrPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            scrPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            frm.getContentPane().add(scrPane); //adiciona elemento de scroll ao JFrame
-            frm.setVisible(true);
-            
-        } catch (Exception e){
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
+            //File getFileImg = openFileChooser.getSelectedFile();
+            String imgTitle = getFileImg.getName();
+            Image image = LoadImageFromFile(getFileImg);
+            if (image == null) continue;
+
+            JLabel lbl = addToPanel(image, imgTitle);
+            panel.add(lbl);
+            panel.add(Box.createHorizontalStrut(10));
         }
+        frm.add(panel);
+        frm.pack();
+        frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+
+        //scroll
+        JScrollPane scrPane = new JScrollPane(panel); //Um JPanel com scroll das imagens
+        scrPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        frm.getContentPane().add(scrPane); //adiciona elemento de scroll ao JFrame
+        frm.setVisible(true);
     }
     
     public static void imagesToSave(ArrayList<Node> arr, File dir){
@@ -159,7 +163,7 @@ public class ImagePanel extends JPanel {
                 ImageIO.write(img, "png", new File(imagePath));
             }
         } catch (Exception e){
-            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, "Saving images", e);
         }
     }
 

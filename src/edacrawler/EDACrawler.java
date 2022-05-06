@@ -115,7 +115,7 @@ public class EDACrawler {
             }
         }
         catch (IOException e) {
-            Logger.getLogger(Interface.class.getName()).log(Level.WARNING, null, e.getMessage());
+            Logger.getLogger(Interface.class.getName()).log(Level.WARNING, "Searching", e.getMessage());
         }
         
         return null;
